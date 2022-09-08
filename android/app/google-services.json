@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659778191979",
+    "firebase_url": "https://apphrd-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "apphrd",
+    "storage_bucket": "apphrd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659778191979:android:ef1ea2de3245bffaba272e",
+        "android_client_info": {
+          "package_name": "com.hrdapp.apphrd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659778191979-q9a1hsendcn8o849o1iikc0iee060k20.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA6h4ShCbs9Lsu1uN5yWKT7rwDfAbsC-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659778191979-q9a1hsendcn8o849o1iikc0iee060k20.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
