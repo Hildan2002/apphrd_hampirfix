@@ -1,41 +1,80 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
-class Cutidetail extends StatelessWidget {
+
+class Cutidetail extends StatefulWidget {
+
   final Timestamp timestamp;
 
   const Cutidetail({Key? key, required this.timestamp}) : super(key: key);
 
   @override
+  State<Cutidetail> createState() => _CutidetailState();
+}
+
+class _CutidetailState extends State<Cutidetail> {
+  void sendPushMessage(String token) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'key=AAAAmZ3YQms:APA91bFMbsTBWRlN6Taf3jZQrpri3hOBk8v2jjKFVGkR-KMIbmUb2sXN19HtX5VP30Oac_KkEzzht1ewhq6ksX2kjNTLLRiThYY54eY9jVC4YSBGjdf7YPhr5JtOiBGOrcroI11nxsGV',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{
+              'body': 'Request Baru',
+              'title': 'Anda mendapat request baru'
+            },
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done'
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      print("error push notification");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     String? periksa2;
     final user = FirebaseAuth.instance.currentUser!;
-    final Stream<QuerySnapshot> cutiform = FirebaseFirestore.instance.collection('cuti').where("idtime", isEqualTo: timestamp).snapshots();
+    final Stream<QuerySnapshot> cutiform = FirebaseFirestore.instance.collection('cuti').where("idtime", isEqualTo: widget.timestamp).snapshots();
 
     switch(user.email){
       case 'ayuandini@0916.nsi':
       case 'viola@0962.nsi':
-        periksa2 = 'Approved';
+        periksa2 = 'Approve';
         break;
       case 'yuki@takahashi.nsi':
-      case 'adi@0217.nsi':
+      case 'adi@0947.nsi':
       case 'widodo@0368.nsi':
         periksa2 = 'ayuandini@0916.nsi';
         break;
       case 'rohmad@0167.nsi'  :
       case  'samsu@0012.nsi' :
-      case 'cecep@0123.nsi'  :
+      case 'cep@0178.nsi'  :
         periksa2 = 'widodo@0368.nsi';
         break;
       case 'harlan@0693.nsi':
-        periksa2 = 'generalmanageraccounting@gmail.com';
+        periksa2 = 'yuki@takahashi.nsi';
         break;
       case 'sumadi@0068.nsi':
       case 'dedi@0519.nsi':
       case 'yana@0175.nsi':
-        periksa2 = 'adi@0217.nsi';
+        periksa2 = 'adi@0947.nsi';
         break;
       default :
         periksa2 = 'error';
@@ -100,6 +139,24 @@ class Cutidetail extends StatelessWidget {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.grey),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child:ListTile(
+                                            title: Text(documentSnapshot['email'].toString()),
+                                            subtitle: Text('Form ini Dikirim Oleh'),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: Container(
@@ -237,7 +294,19 @@ class Cutidetail extends StatelessWidget {
                                 ),
                               ),
                               ElevatedButton(
-                                  onPressed: () => _update(documentSnapshot),
+                                  onPressed: () {
+                                    _update(documentSnapshot);
+                                    FirebaseFirestore.instance
+                                        .collection("users")
+                                        .where("email", isEqualTo: periksa2)
+                                        .get().then(
+                                            (QuerySnapshot snapshot) => {
+                                          if(snapshot.docs.isNotEmpty){
+                                            sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                            debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                                          }
+                                        });
+                                  },
                                   child: const Text('Approve'))
                             ],
                           );

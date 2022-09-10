@@ -65,6 +65,7 @@ class _RequestCutiState extends State<RequestCuti> {
     'ENGINEERING',
     'QA',
     'QC',
+    'MARKETING'
   ];
 
 
@@ -203,6 +204,9 @@ class _RequestCutiState extends State<RequestCuti> {
     // var list_pegawai = "ujicoba";
     // final idStep =  {
     switch (secdept) {
+      case 'MARKETING' :
+        periksa = 'yujiro@takahashi.nsi';
+        break;
       case 'CAM':
       case 'CNC':
         periksa = 'rohmad@0167.nsi';
@@ -486,7 +490,11 @@ class _RequestCutiState extends State<RequestCuti> {
                               ),
                             ),
                           ),
+                        ],
+                      ),
 
+                      Row(
+                        children: [
                           Expanded(
                             flex: 1,
                             child: Padding(
@@ -565,7 +573,7 @@ class _RequestCutiState extends State<RequestCuti> {
                               height: 50,
                               child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
-                                  child: Icon(Icons.send),
+                                  child: Text('Kirim'),
                                   onPressed: () async {
                                     _onDone();
                                     FirebaseFirestore.instance
@@ -648,6 +656,8 @@ class _RequestCutiState extends State<RequestCuti> {
       'sakit' : sakit,
       'absen' : absen,
       'dinas luar' : dinasluar,
+      'status' : 'proses',
+      'email' : '${FirebaseAuth.instance.currentUser!.email}',
 
     };
     await overtime.add(json);

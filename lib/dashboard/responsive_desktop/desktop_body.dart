@@ -1,10 +1,14 @@
 import 'package:aplikasi_hrd/dashboard/constant.dart';
 import 'package:aplikasi_hrd/dashboard/responsive_desktop/calendar.dart';
 import 'package:aplikasi_hrd/request/cuti_form.dart';
+import 'package:aplikasi_hrd/request/cuti_qusus.dart';
 import 'package:aplikasi_hrd/request/export_excel.dart';
+import 'package:aplikasi_hrd/request/history.dart';
 import 'package:aplikasi_hrd/request/overtime_form.dart';
 import 'package:aplikasi_hrd/request/request_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,14 +21,15 @@ class DesktopScaffold extends StatefulWidget {
   State<DesktopScaffold> createState() => _DesktopScaffoldState();
 }
 
-Future<void> _signOut() async {
-  await FirebaseAuth.instance.signOut();
-}
+
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _signOut() async {
+      await FirebaseAuth.instance.signOut();
+    }
     final user = FirebaseAuth.instance.currentUser!;
     final Stream<QuerySnapshot> _notif = FirebaseFirestore.instance.collection('overtime').where('stepid', isEqualTo: user.email).snapshots();
     final Stream<QuerySnapshot> _notif1 = FirebaseFirestore.instance.collection('cuti').where('stepid', isEqualTo: user.email).snapshots();
@@ -70,16 +75,24 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   //     ),
                   //   ),
                   // ),
-                  // Padding(
-                  //   padding: tilePadding,
-                  //   child: ListTile(
-                  //     leading: Icon(Icons.info),
-                  //     title: Text(
-                  //       'A B O U T',
-                  //       style: drawerTextColor,
-                  //     ),
-                  //   ),
-                  // ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const HistoryPage())
+                      );
+                    },
+                    child: Padding(
+                      padding: tilePadding,
+                      child: ListTile(
+                        leading: Icon(Icons.history),
+                        title: Text(
+                          'H I S T O R Y',
+                          style: drawerTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: tilePadding,
                     child: ListTile(
@@ -121,19 +134,52 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             color: Color(0xFF415EB6),
                           ),
                         ),
-                        InkWell(
-                          onTap: (){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>  const RequestCuti())
-                            );
-                          },
-                          child: const CardFolderDesktop(
-                            image: Icon(Icons.card_travel, size: 25,),
-                            title: "Off Work",
-                            date: "Tombol Form Cuti",
-                            color: Color(0xFFFFB110),
-                          ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text("Something went wrong");
+                              }
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Text("Loading");
+                              }
+                              if (snapshot.hasData && !snapshot.data!.exists) {
+                                return Text("Document does not exist");
+                              }
+                              if(snapshot.data!['cuti'] == 'khusus') {
+                                return InkWell(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) =>  const RequestCutiQusus())
+                                    );
+                                  },
+                                  child: const CardFolderDesktop(
+                                    image: Icon(Icons.card_travel, size: 25,),
+                                    title: "Off Work",
+                                    date: "Tombol Form Cuti",
+                                    color: Color(0xFFFFB110),
+                                  ),
+                                );
+                              }
+                              else{
+                                return InkWell(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) =>  const RequestCuti())
+                                    );
+                                  },
+                                  child: const CardFolderDesktop(
+                                    image: Icon(Icons.card_travel, size: 25,),
+                                    title: "Off Work",
+                                    date: "Tombol Form Cuti",
+                                    color: Color(0xFFFFB110),
+                                  ),
+                                );
+                              }
+
+                          }
                         ),
                         InkWell(
                           onTap: (){
@@ -149,20 +195,55 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             color: Color(0xFFAC4040),
                           ),
                         ),
-                        InkWell(
-                          onTap: (){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const ExportExel())
-                            );
-                          },
-                          child: CardFolderDesktop(
-                            image: Icon(Icons.inbox, size: 25,),
-                            // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                            title: "Inbox",
-                            date: "Inbox Request",
-                            color: Color(0xFF23B0B0),
-                          ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text("Something went wrong");
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text("Loading");
+                              }
+                              if (snapshot.hasData && !snapshot.data!.exists) {
+                                return Text("Document does not exist");
+                              }
+                              if (snapshot.data!['role'] == 'admin') {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (
+                                            context) => const ExportExel())
+                                    );
+                                  },
+                                  child: CardFolderDesktop(
+                                    image: Icon(Icons.inbox, size: 25,),
+                                    // image: Image.asset("assets/icons/folder-23B0B0.png"),
+                                    title: "Inbox",
+                                    date: "Inbox Request",
+                                    color: Color(0xFF23B0B0),
+                                  ),
+                                );
+                              }
+                              return InkWell(
+                                onTap: () {
+                                  ElegantNotification.error(
+                                    title: Text('Forbidden'),
+                                    description: Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
+                                    notificationPosition: NotificationPosition.top,
+                                    dismissible: true,
+                                  ).show(context);
+                                },
+                                child: CardFolderDesktop(
+                                  image: Icon(Icons.inbox, size: 25,),
+                                  // image: Image.asset("assets/icons/folder-23B0B0.png"),
+                                  title: "Inbox",
+                                  date: "Inbox Request",
+                                  color: Color(0xFF23B0B0),
+                                ),
+                              );
+                            }
                         ),
                       ],
                     ),
@@ -281,7 +362,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                     textAlign: TextAlign.center,
                                   ),
                                   Text(
-                                    snapshot.data!['department'],
+                                    snapshot.data!['nik'],
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),

@@ -67,14 +67,14 @@ class _RequestOvertimeState extends State<RequestOvertime> {
   ];
 
   static const menuItems2 = <String>[
-    '1NEW',
-    '1JNEW',
-    '2NEW',
+    '1 NEW',
+    '1J NEW',
+    '2 NEW',
     'OFF',
     'OFF2',
-    '1NEWP',
-    '1JNEWP',
-    '2NEWP'
+    '1 NEWP',
+    '1J NEWP',
+    '2 NEWP'
   ];
 
   String? _butonSelected1;
@@ -274,21 +274,25 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       var job = jobTECs[i].text;
       var jamawal = jamaTECs[i].text;
       var jamkhir = jamkhirTECs[i].text;
-      // var format = DateFormat('HH.mm');
-      // var awal = format.parse(jamawal);
-      // var akhir = format.parse(jamkhir);
+      var format = DateFormat('HH.mm');
+      var format2 = DateFormat('HH:mm');
+      var awal = format.parse(jamawal);
+      var akhir = format.parse(jamkhir);
       // if (akhir.isBefore(awal)) akhir = akhir.add(const Duration(hours: 24));
       // Duration beda = akhir.difference(awal);
-      //
+      // //
       // String twoDigits(int n){
       //   return n.toString().padLeft(2,"0");
       // }
       // String selisih = "${twoDigits(beda.inHours)}:${twoDigits(beda.inMinutes.remainder(60))}";
-      Employee employee = Employee(name, nik, job, jamawal, jamkhir);
+      Employee employee = Employee(name, nik, job, format2.format(awal), format2.format(akhir));
       list_pegawai.add(employee);
     }
     // final idStep =  {
     switch (secdept) {
+      case 'MARKETING' :
+        periksa = 'yujiro@takahashi.nsi';
+        break;
       case 'CAM':
       case 'CNC':
         periksa = 'rohmad@0167.nsi';
@@ -362,11 +366,11 @@ class _RequestOvertimeState extends State<RequestOvertime> {
               ),
               tabs: [
                 Tab(
-                  text: 'Header'
+                  text: 'Penanggung Jawab'
                   ,
                 ),
                 Tab(
-                  text: 'Content',
+                  text: 'Pasukan',
                 )
               ],
             ),
@@ -561,6 +565,8 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       'shift': shift,
       'peserta': list.map((e) => e.toJson()).toList(),
       'stepid': periksa,
+      'status' : 'proses',
+      'email' : '${FirebaseAuth.instance.currentUser!.email}',
     };
     await overtime.add(json);
 

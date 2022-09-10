@@ -32,7 +32,6 @@ class _ExportExelState extends State<ExportExel> {
   // TimeOfDay time = TimeOfDay(hour: 10, minute: 30);
 
   Future<Null> _selectDate(BuildContext context) async {
-    debugPrint(selectedDate.toString());
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -50,10 +49,12 @@ class _ExportExelState extends State<ExportExel> {
 
   @override
   Widget build(BuildContext context) {
+    _tanggalController.text = DateFormat.yMMMEd().format(selectedDate);
 
     final Stream<QuerySnapshot> _export = FirebaseFirestore.instance.collection('overtime')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('stepid', isEqualTo: 'Approve')
+        // .orderBy('shift', descending: false)
         .snapshots();
     final Stream<QuerySnapshot> _exportC = FirebaseFirestore.instance.collection('cuti')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
@@ -171,27 +172,30 @@ class _ExportExelState extends State<ExportExel> {
                                       "SPL On Break Duration":5,
                                       "SPL Off Date":6,
                                       "SPL Off Time":7,
-                                      "Bonus":8
                                     };
                                     header.forEach((key, value) {
                                       cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
                                       cell.value = key;
                                       koloms = koloms + 1;
                                     });
-                                    cell.value = _tanggalController.text;
+                                    // cell.value = _tanggalController.text;
                                     semuaDokumen.forEach((element) {
                                       // debugPrint(element['tanggal']);
                                       // var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
                                       // cell.value = element['tanggal']; rows += 1;
                                       element['peserta'].forEach((pasukan){
+                                        gantiFormat(String tanggal){
+                                          var formatTanggalAwal = DateFormat("yyyy-MM-dd").parse(tanggal);
+                                          return DateFormat("dd-MMM-yyyy").format(formatTanggalAwal);
+                                        }
                                         koloms = 0;
                                         rows = rows + 1;
                                         koloms = header['ID']!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = pasukan['nik'];
+                                        cell.value = pasukan['nik'].toString();
                                         koloms = header['Date']!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = element['tanggal'];
+                                        cell.value = gantiFormat(element['tanggal']);
                                         koloms = header['New Working Shift']!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
                                         cell.value = element['shift'];
@@ -204,23 +208,18 @@ class _ExportExelState extends State<ExportExel> {
                                         koloms = header['SPL On Break Duration']!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
                                         // cell.value = pasukan['nik'];
-                                        koloms = header['SPL Off Date']!;
+                                        koloms = (header['SPL Off Date'])!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = element['tanggal'];
+                                        cell.value = gantiFormat(element['tanggal']);
                                         if((element['shift']).toString().contains("2")){
-                                          cell.value = (DateTime.parse(element['tanggal']).add(const Duration(days: 1))).toString().substring(0,10);
+                                          cell.value = gantiFormat((DateTime.parse(element['tanggal']).add(const Duration(days: 1))).toString().substring(0,10));
 
                                           debugPrint(DateTime.parse(element['tanggal']).toString());
                                         }
                                         koloms = header['SPL Off Time']!;
                                         cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
                                         cell.value = pasukan['jamkhir'];
-                                        // cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        // cell.value = pasukan['name'];
                                       });
-                                      // koloms = 0;
-                                      // rows = rows + 1;  //i+1 means when the loop iterates every time it will write values in new row, e.g A1, A2, ...
-
                                     });
                                     // peserta.forEach((pasukan){
                                     // });
@@ -231,7 +230,9 @@ class _ExportExelState extends State<ExportExel> {
                                     // var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1));   //i+1 means when the loop iterates every time it will write values in new row, e.g A1, A2, ...
                                     // cell.value = "masuk masuk";
 
-                                    excel.save(fileName: "download.xlsx");
+                                    // final AutoFilter autofilter = worksheet.autoFilters[0];
+                                    // autofilter.addColorFilter('#FF0000', ExcelColorFilterType.cellColor);
+                                    excel.save(fileName: "${_tanggalController.text}.xlsx");
 
                                   }
                                   _onExport();
@@ -590,11 +591,7 @@ class _ExportExelState extends State<ExportExel> {
                             itemCount: streamSnapshot.data!.docs.length,
                             itemBuilder: (context, index) {
                               final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
-                              // var peserta = documentSnapshot['peserta'];
-                              // var daftarPeserta = "Daftar Peserta Lembur:";
-                              // peserta.forEach((item){
-                              //   daftarPeserta = daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal'] + " hingga pukul " + item['jamkhir'];
-                              // });
+
                               var tanggal = documentSnapshot['tanggal'];
 
                               return Column(
@@ -615,7 +612,7 @@ class _ExportExelState extends State<ExportExel> {
                                           title: Text("Keterangan ${documentSnapshot['keterangan'].toString()}"),
                                         ),
                                         ListTile(
-                                          title: Text("Jumlah Cuti yang Diambil ${documentSnapshot['jumlahharide'].toString()}"),
+                                          title: Text("Jumlah Cuti yang Diambil ${documentSnapshot['jumlahhari'].toString()}"),
                                         ),
                                         ListTile(
                                           title: Text('Cuti Tahunan = ${documentSnapshot['cutitahunan']} \n Dispensasi = ${documentSnapshot['dispensasi']} \n Izin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']} \n sakit = ${documentSnapshot['sakit']} \n Dinas Luar = ${documentSnapshot['absen']} \n dinas luar = ${documentSnapshot['dinas luar']}'),
