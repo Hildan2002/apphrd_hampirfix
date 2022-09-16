@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:aplikasi_hrd/main.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:elegant_notification/elegant_notification.dart';
@@ -11,9 +11,11 @@ import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:backdrop/backdrop.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class RequestCuti extends StatefulWidget {
   const RequestCuti({Key? key}) : super(key: key);
@@ -24,8 +26,49 @@ class RequestCuti extends StatefulWidget {
 
 
 class _RequestCutiState extends State<RequestCuti> {
+  // File? image;
+  File? _pickedImage;
+  Uint8List webImage = Uint8List(8);
 
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> getImage() async {
+    if(!kIsWeb){
+      final ImagePicker _picker = ImagePicker();
+      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if(image != null){
+        var selected = File(image.path);
+        setState(() {
+          _pickedImage = selected;
+        });
+      } else{
+        debugPrint('error mas');
+      }
+    } else if (kIsWeb){
+      final ImagePicker _picker = ImagePicker();
+      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if(image != null){
+        var f = await image.readAsBytes();
+        setState(() {
+            webImage = f;
+            _pickedImage = File('a');
+        });
+      } else{
+        debugPrint('error mas');
+      }
+    } else {
+      debugPrint('ana sing error');
+    }
+    // final ImagePicker _picker = ImagePicker();
+    // final XFile? imagePicked =
+    //     await _picker.pickImage(source: ImageSource.gallery);
+    // if (kIsWeb) {
+    //   Image.network(imagePicked!.path);
+    // } else {
+    //   image = File(imagePicked!.path);    }
+    // setState(() {});
+  }
+
   void sendPushMessage(String token) async {
     try {
       await http.post(
@@ -294,7 +337,7 @@ class _RequestCutiState extends State<RequestCuti> {
                             },
                             controller: _atasnamaController,
                             textInputAction: TextInputAction.next,
-                            autofocus: true,
+                            // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               labelText: 'Nama Bersangkutan',
@@ -315,7 +358,7 @@ class _RequestCutiState extends State<RequestCuti> {
                             },
                             controller: _nikController,
                             textInputAction: TextInputAction.next,
-                            autofocus: true,
+                            // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               labelText: 'NIK',
@@ -335,7 +378,7 @@ class _RequestCutiState extends State<RequestCuti> {
                             },
                             controller: _keteranganController,
                             textInputAction: TextInputAction.next,
-                            autofocus: true,
+                            // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               labelText: 'Keterangan Cuti',
@@ -355,7 +398,7 @@ class _RequestCutiState extends State<RequestCuti> {
                             },
                             controller: _jumlahhariController,
                             textInputAction: TextInputAction.next,
-                            autofocus: true,
+                            // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               labelText: 'Jumlah Hari yang Diambil',
@@ -488,7 +531,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 TextFormField(
                                   controller: _cutitahunanController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Cuti Tahunan',
@@ -505,7 +548,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 child: TextFormField(
                                   controller: _dispensasiController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Dispensasi',
@@ -522,7 +565,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 child: TextFormField(
                                   controller: _izintidakupahController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Izin Tanpa Upah',
@@ -543,7 +586,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 child: TextFormField(
                                   controller: _sakitController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Sakit',
@@ -560,7 +603,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 child: TextFormField(
                                   controller: _absenController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Absen',
@@ -577,7 +620,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 child: TextFormField(
                                   controller: _dinasluarController,
                                   textInputAction: TextInputAction.next,
-                                  autofocus: true,
+                                  // autofocus: true,
                                   decoration: const InputDecoration(
                                     border: UnderlineInputBorder(),
                                     labelText: 'Dinas Luar',
@@ -586,6 +629,44 @@ class _RequestCutiState extends State<RequestCuti> {
                               ),
                             ),
                           ],
+                        ),
+
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _pickedImage != null
+                                  ? Container(
+                                  height: MediaQuery.of(context).size.height,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: kIsWeb?
+                                      Image.memory(webImage, fit: BoxFit.cover,):
+                                      Image.file(_pickedImage!, fit: BoxFit.cover,)
+                              )
+                                  : Container(),
+                              ElevatedButton(
+                                  style:
+                                      TextButton.styleFrom(backgroundColor: Colors.blueAccent),
+                                  onPressed: () async {
+                                    try{
+                                      getImage();
+                                    } catch (error){
+                                      ElegantNotification.error(
+                                        title: Text('Berhasil'),
+                                        description: Text('$error'),
+                                        notificationPosition: NotificationPosition.top,
+                                        dismissible: true,
+                                      ).show(context);
+                                    }
+                                  },
+                                  child: Text(
+                                    'Upload Bukti Surat Dokter',
+                                    style: TextStyle(color: Colors.white),
+                                  ))
+                            ],
+                          ),
                         ),
 
                         Row(
@@ -599,7 +680,17 @@ class _RequestCutiState extends State<RequestCuti> {
                                     style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
                                     child: const Text('Back'),
                                     onPressed: ()  {
-                                      Navigator.pop(context);
+                                      // Navigator.pop(context);
+                                      try{
+                                        getImage();
+                                      } catch (error){
+                                        ElegantNotification.error(
+                                          title: Text('Berhasil'),
+                                          description: Text('$error'),
+                                          notificationPosition: NotificationPosition.top,
+                                          dismissible: true,
+                                        ).show(context);
+                                      }
                                     }
 
                                 ),
