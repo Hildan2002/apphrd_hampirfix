@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:path/path.dart';
 import 'package:intl/intl.dart';
-import 'package:excel/excel.dart';
 
 
 
@@ -31,7 +30,7 @@ class _HistoryPageState extends State<HistoryPage> {
   DateTime selectedDate = DateTime.now();
 
 
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -50,26 +49,26 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     _tanggalController.text = DateFormat.yMMMEd().format(selectedDate);
-    final Stream<QuerySnapshot> _Pexport = FirebaseFirestore.instance.collection('overtime')
+    final Stream<QuerySnapshot> Pexport = FirebaseFirestore.instance.collection('overtime')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
         .where('status', isEqualTo : 'proses')
         .snapshots();
     debugPrint(selectedDate.toString().substring(0,10));
 
-    final Stream<QuerySnapshot> _PexportC = FirebaseFirestore.instance.collection('cuti')
+    final Stream<QuerySnapshot> PexportC = FirebaseFirestore.instance.collection('cuti')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
         .where('status', isEqualTo : 'proses')
         .snapshots();
 
-    final Stream<QuerySnapshot> _export = FirebaseFirestore.instance.collection('overtime')
+    final Stream<QuerySnapshot> export = FirebaseFirestore.instance.collection('overtime')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: '${FirebaseAuth.instance.currentUser!.email}')
         .where('status', isEqualTo: 'done')
         .snapshots();
 
-    final Stream<QuerySnapshot> _exportC = FirebaseFirestore.instance.collection('cuti')
+    final Stream<QuerySnapshot> exportC = FirebaseFirestore.instance.collection('cuti')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
         .where('status', isEqualTo: 'done')
@@ -78,7 +77,8 @@ class _HistoryPageState extends State<HistoryPage> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Menu Export Data'),
+          backgroundColor: Colors.black,
+          title: const Text('Menu Export Data'),
           centerTitle: true,
           bottom: const TabBar(
             indicatorColor: Colors.lime,
@@ -88,9 +88,9 @@ class _HistoryPageState extends State<HistoryPage> {
             unselectedLabelColor: Colors.grey,
             tabs: [
               Tab(
-                text: 'Progress Overtime',
+                text: 'Progress OT',
                 icon: Icon(
-                  Icons.fire_truck,
+                  Icons.book_outlined,
                   color: Colors.white,
                 ),
                 iconMargin: EdgeInsets.only(bottom: 10.0),
@@ -99,7 +99,7 @@ class _HistoryPageState extends State<HistoryPage> {
               Tab(
                 text: 'Request Cuti',
                 icon: Icon(
-                  Icons.rocket_launch_rounded,
+                  Icons.beach_access,
                   color: Colors.white,
                 ),
                 iconMargin: EdgeInsets.only(bottom: 10.0),
@@ -135,7 +135,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Column(
                       children: [
-                        Text(
+                        const Text(
                           'Choose Date',
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -151,18 +151,18 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: Container(
                               width: 200,
                               height: 45,
-                              margin: EdgeInsets.only(top: 2),
+                              margin: const EdgeInsets.only(top: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
                                 color: Colors.grey[200],
                                 border: Border.all(color: Colors.grey),),
                               child: TextFormField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 textAlign: TextAlign.center,
                                 enabled: false,
                                 keyboardType: TextInputType.text,
                                 controller: _tanggalController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     disabledBorder:
                                     UnderlineInputBorder(borderSide: BorderSide.none),
                                     // labelText: 'Time',
@@ -178,10 +178,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 Expanded(
                   child: StreamBuilder(
-                    stream: _Pexport,
+                    stream: Pexport,
                     builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasError) {
-                        return Text('Something went wrong');
+                        return const Text('Something went wrong');
                       }
                       if (streamSnapshot.hasData ) {
                         return ListView.builder(
@@ -191,7 +191,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             var peserta = documentSnapshot['peserta'];
                             var daftarPeserta = "Daftar Peserta Lembur:";
                             peserta.forEach((item){
-                              daftarPeserta = daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal'] + " hingga pukul " + item['jamkhir'];
+                              daftarPeserta = "${daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal']} hingga pukul " + item['jamkhir'];
                             });
                             var tanggal = documentSnapshot['tanggal'];
 
@@ -204,13 +204,15 @@ class _HistoryPageState extends State<HistoryPage> {
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
-                                        title: Text('nama yang bertanggung jawab : ${documentSnapshot['name_pic'].toString()}'),
+                                        title: Text('Dokumen ini telah diterima pada ${documentSnapshot['captanggal'].toString().substring(0,documentSnapshot['captanggal'].toString().indexOf("."))} '
+                                            'dan akan diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
+                                        )}'),
                                       ),
                                       ListTile(
                                         title: Text("Tanggal : ${tanggal.substring(0,10)}"),
                                       ),
                                       ListTile(
-                                        title: Text("Shift ${documentSnapshot['shift'].toString()}"),
+                                        title: Text(documentSnapshot['shift'].toString()),
                                       ),
                                       ListTile(
                                         title: Text(daftarPeserta),
@@ -220,8 +222,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                 ),
                               ],
                             );
-
-
                           },
                         );
                       }
@@ -231,7 +231,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     },
                   ),
                 ),
-
               ],
             ),
 
@@ -242,7 +241,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Column(
                       children: [
-                        Text(
+                        const Text(
                           'Choose Date',
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -258,18 +257,18 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: Container(
                               width: 200,
                               height: 45,
-                              margin: EdgeInsets.only(top: 2),
+                              margin: const EdgeInsets.only(top: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
                                 color: Colors.grey[200],
                                 border: Border.all(color: Colors.grey),),
                               child: TextFormField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 textAlign: TextAlign.center,
                                 enabled: false,
                                 keyboardType: TextInputType.text,
                                 controller: _tanggalController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     disabledBorder:
                                     UnderlineInputBorder(borderSide: BorderSide.none),
                                     // labelText: 'Time',
@@ -278,9 +277,6 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           ),
                         ),
-
-
-
                       ],
                     ),
                   ],
@@ -288,19 +284,17 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 Expanded(
                   child: StreamBuilder(
-                    stream: _PexportC,
+                    stream: PexportC,
                     builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasError) {
-                        return Text('Something went wrong');
+                        return const Text('Something went wrong');
                       }
                       if (streamSnapshot.hasData ) {
                         return ListView.builder(
                           itemCount: streamSnapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
-
                             var tanggal = documentSnapshot['tanggal'];
-
                             return Column(
                               children: [
                                 Card(
@@ -316,21 +310,19 @@ class _HistoryPageState extends State<HistoryPage> {
                                         title: Text("Tanggal : ${tanggal.substring(0,10)}"),
                                       ),
                                       ListTile(
-                                        title: Text("Keterangan ${documentSnapshot['keterangan'].toString()}"),
+                                        title: Text("Keterangan : ${documentSnapshot['keterangan'].toString()}"),
                                       ),
                                       ListTile(
                                         title: Text("Jumlah Cuti yang Diambil ${documentSnapshot['jumlahhari'].toString()}"),
                                       ),
                                       ListTile(
-                                        title: Text('Cuti Tahunan = ${documentSnapshot['cutitahunan']} \n Dispensasi = ${documentSnapshot['dispensasi']} \n Izin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']} \n sakit = ${documentSnapshot['sakit']} \n Dinas Luar = ${documentSnapshot['absen']} \n dinas luar = ${documentSnapshot['dinas luar']}'),
+                                        title: Text(formatCuti(documentSnapshot)),
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
                             );
-
-
                           },
                         );
                       }
@@ -340,7 +332,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     },
                   ),
                 ),
-
               ],
             ),
 
@@ -351,7 +342,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Column(
                       children: [
-                         Text(
+                         const Text(
                           'Choose Date',
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -367,18 +358,18 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: Container(
                               width: 200,
                               height: 45,
-                              margin: EdgeInsets.only(top: 2),
+                              margin: const EdgeInsets.only(top: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
                                 color: Colors.grey[200],
                                 border: Border.all(color: Colors.grey),),
                               child: TextFormField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 textAlign: TextAlign.center,
                                 enabled: false,
                                 keyboardType: TextInputType.text,
                                 controller: _tanggalController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     disabledBorder:
                                     UnderlineInputBorder(borderSide: BorderSide.none),
                                     // labelText: 'Time',
@@ -394,10 +385,10 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 Expanded(
                   child: StreamBuilder(
-                    stream: _export,
+                    stream: export,
                     builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasError) {
-                        return Text('Something went wrong');
+                        return const Text('Something went wrong');
                       }
                       if (streamSnapshot.hasData ) {
                         return ListView.builder(
@@ -407,10 +398,10 @@ class _HistoryPageState extends State<HistoryPage> {
                             var peserta = documentSnapshot['peserta'];
                             var daftarPeserta = "Daftar Peserta Lembur:";
                             peserta.forEach((item){
-                              daftarPeserta = daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal'] + " hingga pukul " + item['jamkhir'];
+                              daftarPeserta = "${daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal']} hingga pukul " + item['jamkhir'];
+                              // daftarPeserta = "${daftarPeserta + "\n- " + item['name'] + ", Keterangan : " + item['job'] + " dari pukul " + item['jamawal']} hingga pukul " + item['jamkhir'];
                             });
                             var tanggal = documentSnapshot['tanggal'];
-
                             return Column(
                               children: [
                                 Card(
@@ -445,7 +436,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     },
                   ),
                 ),
-
               ],
             ),
 
@@ -456,7 +446,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Column(
                       children: [
-                        Text(
+                        const Text(
                           'Choose Date',
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -472,18 +462,18 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: Container(
                               width: 200,
                               height: 45,
-                              margin: EdgeInsets.only(top: 2),
+                              margin: const EdgeInsets.only(top: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
                                 color: Colors.grey[200],
                                 border: Border.all(color: Colors.grey),),
                               child: TextFormField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 textAlign: TextAlign.center,
                                 enabled: false,
                                 keyboardType: TextInputType.text,
                                 controller: _tanggalController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     disabledBorder:
                                     UnderlineInputBorder(borderSide: BorderSide.none),
                                     // labelText: 'Time',
@@ -492,9 +482,6 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           ),
                         ),
-
-
-
                       ],
                     ),
                   ],
@@ -502,19 +489,17 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 Expanded(
                   child: StreamBuilder(
-                    stream: _exportC,
+                    stream: exportC,
                     builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                       if (streamSnapshot.hasError) {
-                        return Text('Something went wrong');
+                        return const Text('Something went wrong');
                       }
                       if (streamSnapshot.hasData ) {
                         return ListView.builder(
                           itemCount: streamSnapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
-
                             var tanggal = documentSnapshot['tanggal'];
-
                             return Column(
                               children: [
                                 Card(
@@ -536,15 +521,13 @@ class _HistoryPageState extends State<HistoryPage> {
                                         title: Text("Jumlah Cuti yang Diambil ${documentSnapshot['jumlahhari'].toString()}"),
                                       ),
                                       ListTile(
-                                        title: Text('Cuti Tahunan = ${documentSnapshot['cutitahunan']} \n Dispensasi = ${documentSnapshot['dispensasi']} \n Izin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']} \n sakit = ${documentSnapshot['sakit']} \n Dinas Luar = ${documentSnapshot['absen']} \n dinas luar = ${documentSnapshot['dinas luar']}'),
+                                        title: Text(formatCuti(documentSnapshot)),
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
                             );
-
-
                           },
                         );
                       }
@@ -554,14 +537,23 @@ class _HistoryPageState extends State<HistoryPage> {
                     },
                   ),
                 ),
-
               ],
             ),
-
           ],
         ),
       ),
     );
+  }
+
+  String formatCuti(DocumentSnapshot<Object?> documentSnapshot) {
+    String a = "";
+    if (documentSnapshot['cutitahunan'] != "")  a += "Cuti Tahunan = ${documentSnapshot['cutitahunan']}";
+    if (documentSnapshot['dispensasi'] != "")   a += "\nDispensasi = ${documentSnapshot['dispensasi']}";
+    if (documentSnapshot['tidakupah'] != "")    a += "\nIzin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']}";
+    if (documentSnapshot['sakit'] != "")        a += "\nSakit = ${documentSnapshot['sakit']}";
+    if (documentSnapshot['absen'] != "")        a += "\nAbsen = ${documentSnapshot['absen']}";
+    if (documentSnapshot['dinas luar'] != "")   a += "\ndinas luar = ${documentSnapshot['dinas luar']}";
+    return a;
   }
 }
 

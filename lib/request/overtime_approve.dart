@@ -53,8 +53,9 @@ class Overtimeinside extends StatelessWidget {
 
     switch(user.email){
       case 'ayuandini@0916.nsi':
-        periksa2 = 'Approve';
+        periksa2 = 'Approve@';
         break;
+      case 'yujiro@takeuchi.nsi':
       case 'yuki@takahashi.nsi':
       case 'adi@0947.nsi':
       case 'widodo@0368.nsi':
@@ -82,9 +83,11 @@ class Overtimeinside extends StatelessWidget {
 
     Future<void> _update([DocumentSnapshot? documentSnapshot]) async{
       await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : periksa2});
+      Navigator.pop(context);
     }
     Future<void> _updateT([DocumentSnapshot? documentSnapshot]) async{
       await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : 'tolak', 'proses' : 'done'});
+      Navigator.pop(context);
     }
 
 
@@ -262,48 +265,121 @@ class Overtimeinside extends StatelessWidget {
                                 children: [
                                   ElevatedButton(
                                       onPressed: () {
-                                        _updateT(documentSnapshot);
-                                        FirebaseFirestore.instance
-                                            .collection("users")
-                                            .where("email", isEqualTo: alamat)
-                                            .get().then(
-                                                (QuerySnapshot snapshot) => {
-                                              if(snapshot.docs.isNotEmpty){
-                                                sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
-                                                debugPrint((snapshot.docs.first.data() as Map)["tokens"])
-                                              }
-                                            });
-                                        ElegantNotification.success(
-                                          title: Text('Berhasil'),
-                                          description: Text('Anda Berhasil menolak request overtime'),
-                                          notificationPosition: NotificationPosition.top,
-                                          dismissible: true,
-                                        ).show(context);
-
-                                        Navigator.pop(context);
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                                title: const Text('Pesan Konfirmasi'),
+                                                content: const Text('Apakah anda telah yakin untuk menolak permintaan ini?'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context, 'OK');
+                                                      _updateT(documentSnapshot);
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .where("email", isEqualTo: alamat)
+                                                          .get().then(
+                                                              (QuerySnapshot snapshot) => {
+                                                            if(snapshot.docs.isNotEmpty){
+                                                              sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                                              debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                                                            }
+                                                          });
+                                                      ElegantNotification.success(
+                                                        title: Text('Berhasil'),
+                                                        description: Text('Anda Berhasil menolak request overtime'),
+                                                        notificationPosition: NotificationPosition.top,
+                                                        dismissible: true,
+                                                      ).show(context);
+                                                    },
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                        );
                                       },
+                                      // {
+                                      //   _updateT(documentSnapshot);
+                                      //   FirebaseFirestore.instance
+                                      //       .collection("users")
+                                      //       .where("email", isEqualTo: alamat)
+                                      //       .get().then(
+                                      //           (QuerySnapshot snapshot) => {
+                                      //         if(snapshot.docs.isNotEmpty){
+                                      //           sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                      //           debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                                      //         }
+                                      //       });
+                                      //   ElegantNotification.success(
+                                      //     title: Text('Berhasil'),
+                                      //     description: Text('Anda Berhasil menolak request overtime'),
+                                      //     notificationPosition: NotificationPosition.top,
+                                      //     dismissible: true,
+                                      //   ).show(context);
+                                      //
+                                      //   Navigator.pop(context);
+                                      // },
                                       child: const Text('Tolak')),
 
                                   ElevatedButton(
                                       onPressed: () {
-                                        _update(documentSnapshot);
-                                        FirebaseFirestore.instance
-                                            .collection("users")
-                                            .where("email", isEqualTo: periksa2)
-                                            .get().then(
-                                                (QuerySnapshot snapshot) => {
-                                              if(snapshot.docs.isNotEmpty){
-                                                sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
-                                                debugPrint((snapshot.docs.first.data() as Map)["tokens"])
-                                              }
-                                            });
-                                        ElegantNotification.success(
-                                          title: Text('Berhasil'),
-                                          description: Text('Anda Berhasil menyetujui request overtime'),
-                                          notificationPosition: NotificationPosition.top,
-                                          dismissible: true,
-                                        ).show(context);
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                                title: const Text('Pesan Konfirmasi'),
+                                                content: const Text('Apakah anda telah yakin untuk menyetujui permintaan ini?'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context, 'OK');
+                                                      _update(documentSnapshot);
+                                                      FirebaseFirestore.instance
+                                                          .collection("users")
+                                                          .where("email", isEqualTo: periksa2)
+                                                          .get().then(
+                                                              (QuerySnapshot snapshot) => {
+                                                            if(snapshot.docs.isNotEmpty){
+                                                              sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                                              debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                                                            }
+                                                          });
+                                                      ElegantNotification.success(
+                                                        title: Text('Berhasil'),
+                                                        description: Text('Anda Berhasil menyetujui request overtime'),
+                                                        notificationPosition: NotificationPosition.top,
+                                                        dismissible: true,
+                                                      ).show(context);
+                                                    },
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                        );
                                       },
+                                      // {
+                                      //   _update(documentSnapshot);
+                                      //   FirebaseFirestore.instance
+                                      //       .collection("users")
+                                      //       .where("email", isEqualTo: periksa2)
+                                      //       .get().then(
+                                      //           (QuerySnapshot snapshot) => {
+                                      //         if(snapshot.docs.isNotEmpty){
+                                      //           sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                      //           debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                                      //         }
+                                      //       });
+
+                                      // },
                                       child: const Text('Approve')),
                                 ],
                               ),

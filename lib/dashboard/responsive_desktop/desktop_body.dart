@@ -1,4 +1,5 @@
 import 'package:aplikasi_hrd/dashboard/constant.dart';
+import 'package:aplikasi_hrd/dashboard/profilepage.dart';
 import 'package:aplikasi_hrd/dashboard/responsive_desktop/calendar.dart';
 import 'package:aplikasi_hrd/request/cuti_form.dart';
 import 'package:aplikasi_hrd/request/cuti_qusus.dart';
@@ -31,9 +32,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       await FirebaseAuth.instance.signOut();
     }
     final user = FirebaseAuth.instance.currentUser!;
-    final Stream<QuerySnapshot> _notif = FirebaseFirestore.instance.collection('overtime').where('stepid', isEqualTo: user.email).snapshots();
-    final Stream<QuerySnapshot> _notif1 = FirebaseFirestore.instance.collection('cuti').where('stepid', isEqualTo: user.email).snapshots();
-    final Stream<QuerySnapshot> _notif2 = FirebaseFirestore.instance.collection('inventaris').where('stepid', isEqualTo: user.email).snapshots();
+    final Stream<QuerySnapshot> notif = FirebaseFirestore.instance.collection('overtime').where('stepid', isEqualTo: user.email).snapshots();
+    final Stream<QuerySnapshot> notif1 = FirebaseFirestore.instance.collection('cuti').where('stepid', isEqualTo: user.email).snapshots();
+    final Stream<QuerySnapshot> notif2 = FirebaseFirestore.instance.collection('inventaris').where('stepid', isEqualTo: user.email).snapshots();
 
     return Scaffold(
       backgroundColor: defaultBackgroundColor,
@@ -49,7 +50,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               elevation: 0,
               child: Column(
                 children: [
-                  DrawerHeader(
+                  const DrawerHeader(
                     child: Icon(
                       Icons.favorite,
                       size: 64,
@@ -79,13 +80,31 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     onTap: (){
                       Navigator.push(
                           context,
+                          MaterialPageRoute(builder: (context) => const ChangePassword())
+                      );
+                    },
+                    child: Padding(
+                      padding: tilePadding,
+                      child: ListTile(
+                        leading: const Icon(Icons.person_outlined),
+                        title: Text(
+                          'P R O F I L',
+                          style: drawerTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(
+                          context,
                           MaterialPageRoute(builder: (context) => const HistoryPage())
                       );
                     },
                     child: Padding(
                       padding: tilePadding,
                       child: ListTile(
-                        leading: Icon(Icons.history),
+                        leading: const Icon(Icons.history),
                         title: Text(
                           'H I S T O R Y',
                           style: drawerTextColor,
@@ -99,7 +118,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                       onTap: (){
                         _signOut();
                       },
-                      leading: Icon(Icons.logout),
+                      leading: const Icon(Icons.logout),
                       title: Text(
                         'L O G O U T',
                         style: drawerTextColor,
@@ -138,13 +157,13 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                               if (snapshot.hasError) {
-                                return Text("Something went wrong");
+                                return const Text("Something went wrong");
                               }
                               if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Text("Loading");
+                                return const Text("Loading");
                               }
                               if (snapshot.hasData && !snapshot.data!.exists) {
-                                return Text("Document does not exist");
+                                return const Text("Document does not exist");
                               }
                               if(snapshot.data!['cuti'] == 'khusus') {
                                 return InkWell(
@@ -199,14 +218,14 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                             builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                               if (snapshot.hasError) {
-                                return Text("Something went wrong");
+                                return const Text("Something went wrong");
                               }
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Text("Loading");
+                                return const Text("Loading");
                               }
                               if (snapshot.hasData && !snapshot.data!.exists) {
-                                return Text("Document does not exist");
+                                return const Text("Document does not exist");
                               }
                               if (snapshot.data!['role'] == 'admin') {
                                 return InkWell(
@@ -217,7 +236,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                             context) => const ExportExel())
                                     );
                                   },
-                                  child: CardFolderDesktop(
+                                  child: const CardFolderDesktop(
                                     image: Icon(Icons.inbox, size: 25,),
                                     // image: Image.asset("assets/icons/folder-23B0B0.png"),
                                     title: "Inbox",
@@ -229,13 +248,13 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                               return InkWell(
                                 onTap: () {
                                   ElegantNotification.error(
-                                    title: Text('Forbidden'),
-                                    description: Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
+                                    title: const Text('Forbidden'),
+                                    description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
                                     notificationPosition: NotificationPosition.top,
                                     dismissible: true,
                                   ).show(context);
                                 },
-                                child: CardFolderDesktop(
+                                child: const CardFolderDesktop(
                                   image: Icon(Icons.inbox, size: 25,),
                                   // image: Image.asset("assets/icons/folder-23B0B0.png"),
                                   title: "Inbox",
@@ -328,7 +347,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(80),
+                    padding: const EdgeInsets.all(80),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -343,7 +362,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                 return Text('Error : ${snapshot.error}');
                               }
                               if(snapshot.connectionState == ConnectionState.waiting){
-                                return Text('loading');
+                                return const Text('loading');
                               }
                               return Column(
                                 children: [
@@ -351,10 +370,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   //   width: 75,
                                   //   height: 75,
                                   // ),
-                                  SizedBox(height: 15),
+                                  const SizedBox(height: 15),
                                   Text(
                                     snapshot.data!['nama'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF22215B),
@@ -363,19 +382,19 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   ),
                                   Text(
                                     snapshot.data!['nik'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                     ),
                                   ),
-                                  SizedBox(height: 15),
+                                  const SizedBox(height: 15),
 
                                   Column(
                                     children: [
                                       StreamBuilder<QuerySnapshot>(
-                                          stream: _notif,
+                                          stream: notif,
                                           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                            if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                                              return Text('Belum Ada Permintaan Lembur',
+                                            if(streamSnapshot.hasData && streamSnapshot.data!.docs.isEmpty){
+                                              return const Text('Belum Ada Permintaan Lembur',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontSize: 1,
@@ -394,10 +413,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                           }
                                       ),
                                       StreamBuilder<QuerySnapshot>(
-                                          stream: _notif1,
+                                          stream: notif1,
                                           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                            if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                                              return Text('Belum Ada Permintaan Cuti',
+                                            if(streamSnapshot.hasData && streamSnapshot.data!.docs.isEmpty){
+                                              return const Text('Belum Ada Permintaan Cuti',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontSize: 1,
@@ -409,17 +428,17 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                               "Ada Permintaan Cuti ${streamSnapshot.data?.docs.length}",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                color: Color(0xFF22215B).withOpacity(0.6),
+                                                color: const Color(0xFF22215B).withOpacity(0.6),
                                                 fontSize: 16,
                                               ),
                                             );
                                           }
                                       ),
                                       StreamBuilder<QuerySnapshot>(
-                                          stream: _notif2,
+                                          stream: notif2,
                                           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                            if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                                              return Text('Belum Ada Permintaan Inventaris',
+                                            if(streamSnapshot.hasData && streamSnapshot.data!.docs.isEmpty){
+                                              return const Text('Belum Ada Permintaan Inventaris',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   fontSize: 1,
@@ -431,7 +450,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                               "Ada permintaan Inventaris ${streamSnapshot.data?.docs.length}",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                color: Color(0xFF22215B).withOpacity(0.6),
+                                                color: const Color(0xFF22215B).withOpacity(0.6),
                                                 fontSize: 16,
                                               ),
                                             );
@@ -447,9 +466,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     ),
                   ),
                   // list of stuff
-                  Expanded(
+                  const Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(8.0),
                       child: CalendarWidget(),
                     ),
                   ),
@@ -480,7 +499,7 @@ class CardFolderDesktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       width: Get.width * 0.12,
       height: 120,
       decoration: BoxDecoration(
@@ -492,7 +511,7 @@ class CardFolderDesktop extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           image,
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Text(
             title,
             style: TextStyle(
@@ -501,7 +520,7 @@ class CardFolderDesktop extends StatelessWidget {
               color: color,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
             date,
             style: TextStyle(

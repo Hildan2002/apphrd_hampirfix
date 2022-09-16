@@ -4,14 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:date_format/date_format.dart';
 
 
 class RequestOvertime extends StatefulWidget {
@@ -22,7 +18,7 @@ class RequestOvertime extends StatefulWidget {
 }
 
 class _RequestOvertimeState extends State<RequestOvertime> {
-
+  final _formKey = GlobalKey<FormState>();
   void sendPushMessage(String token) async {
     try {
       await http.post(
@@ -48,7 +44,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
         ),
       );
     } catch (e) {
-      print("error push notification");
+        print("error push notification");
     }
   }
 
@@ -57,6 +53,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
     'CNC',
     'MFG2',
     'MAINTENANCE',
+    'MARKETING',
     'PPIC',
     'IT',
     'ACCOUNTING',
@@ -67,14 +64,8 @@ class _RequestOvertimeState extends State<RequestOvertime> {
   ];
 
   static const menuItems2 = <String>[
-    '1 NEW',
-    '1J NEW',
-    '2 NEW',
-    'OFF',
-    'OFF2',
-    '1 NEWP',
-    '1J NEWP',
-    '2 NEWP'
+    'Shift 1',
+    'Shift 2'
   ];
 
   String? _butonSelected1;
@@ -120,13 +111,13 @@ class _RequestOvertimeState extends State<RequestOvertime> {
   }
 
 
-  late String dateTime;
+  String? dateTime;
 
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay time = TimeOfDay(hour: 10, minute: 30);
+  TimeOfDay time = const TimeOfDay(hour: 10, minute: 30);
 
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -156,13 +147,19 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text('Karyawan ${cards.length + 1}'),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Form ini wajib diisi';
+                }
+                return null;
+              },
               textInputAction: TextInputAction.next,
               controller: nameController,
               autofocus: true,
@@ -176,6 +173,12 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Form ini wajib diisi';
+                }
+                return null;
+              },
               textInputAction: TextInputAction.next,
               controller: nikController,
               autofocus: true,
@@ -191,12 +194,18 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Form ini wajib diisi';
+                }
+                return null;
+              },
               textInputAction: TextInputAction.next,
               controller: jobController,
               autofocus: true,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
-                labelText: 'Keterangan Lembur',
+                labelText: 'Pekerjaan',
               ),
             ),
           ),
@@ -205,6 +214,12 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Form ini wajib diisi dengan format hh.mm';
+                }
+                return null;
+              },
               textInputAction: TextInputAction.next,
               controller: jamawalController,
               autofocus: true,
@@ -221,6 +236,12 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Form ini wajib diisi dengan format "hh.mm"';
+                }
+                return null;
+              },
               onFieldSubmitted: (value){
                 setState(() => cards.add(createCard()));
               },
@@ -233,7 +254,6 @@ class _RequestOvertimeState extends State<RequestOvertime> {
               textInputAction: TextInputAction.done,
             ),
           ),
-
           // SizedBox(height: 15),
         ],
       ),
@@ -242,8 +262,6 @@ class _RequestOvertimeState extends State<RequestOvertime> {
 
   @override
   void initState() {
-
-    // FirebaseMessaging.instance.subscribeToTopic("Animal");
     _tanggalController.text = DateFormat.yMMMEd().format(DateTime.now());
     super.initState();
     cards.add(createCard());
@@ -251,7 +269,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
     FirebaseMessaging.onMessage.listen(showFlutterNotification);
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
+        print('A new onMessageOpenedApp event was published!');
       Navigator.pushNamed(
         context,
         '/message',
@@ -263,11 +281,11 @@ class _RequestOvertimeState extends State<RequestOvertime> {
   String? periksa;
 
   _onDone() {
-    var name_pic = _tjController.text;
+    var namePic = _tjController.text;
     var tanggal = selectedDate;
     var secdept = _butonSelected1;
     var shift = _butonSelected2;
-    List<Employee> list_pegawai = [];
+    List<Employee> listPegawai = [];
     for (int i = 0; i < cards.length; i++) {
       var name = nameTECs[i].text;
       var nik = nikTECs[i].text;
@@ -286,12 +304,12 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       // }
       // String selisih = "${twoDigits(beda.inHours)}:${twoDigits(beda.inMinutes.remainder(60))}";
       Employee employee = Employee(name, nik, job, format2.format(awal), format2.format(akhir));
-      list_pegawai.add(employee);
+      listPegawai.add(employee);
     }
     // final idStep =  {
     switch (secdept) {
       case 'MARKETING' :
-        periksa = 'yujiro@takahashi.nsi';
+        periksa = 'yujiro@takeuchi.nsi';
         break;
       case 'CAM':
       case 'CNC':
@@ -327,10 +345,10 @@ class _RequestOvertimeState extends State<RequestOvertime> {
     }
     debugPrint(periksa);
 
-    CRUD(name_pic: name_pic,
+    CRUD(name_pic: namePic,
       tanggal: tanggal,
       secdept: secdept,
-      list: list_pegawai,
+      list: listPegawai,
       shift: shift,
       periksa: periksa,
       );
@@ -347,30 +365,22 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       // initialIndex: 1,
         length: 2,
         child: Scaffold(
-          // resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            title: Text('Request Overtime'),
-            bottom: TabBar(
-              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-              unselectedLabelColor: Colors.white,
-              labelColor: Colors.black,
-              indicator: BoxDecoration(
-                  color: Colors.amberAccent,
-                  border: Border(
-                      bottom: BorderSide(
-                        color: Colors.black,
-                        width: 5,
-                      )
-                  )
-              ),
+            backgroundColor: Colors.black,
+            title: const Text('Request Overtime'),
+            bottom: const TabBar(
+              indicatorColor: Colors.lime,
+              indicatorWeight: 5.0,
+              labelColor: Colors.white,
+              labelPadding: EdgeInsets.only(top: 10.0),
+              unselectedLabelColor: Colors.grey,
               tabs: [
                 Tab(
                   text: 'Penanggung Jawab'
                   ,
                 ),
                 Tab(
-                  text: 'Pasukan',
+                  text: 'Peserta',
                 )
               ],
             ),
@@ -380,28 +390,16 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                   StreamBuilder(
-                       stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
-                       builder: (context, AsyncSnapshot<DocumentSnapshot> streamSnapshot) {
-                         if (streamSnapshot.hasError) {
-                           return Text('Something went wrong');
-                         }
-                         if (streamSnapshot.connectionState ==
-                             ConnectionState.waiting) {
-                           return Text("Loading");
-                         }
-                         if (streamSnapshot.hasData) {
-                            return ListTile(
-                                  title: Text('Formulir ini Atas nama : ${streamSnapshot.data!['nama']}'),
-                            );
-                         }
-                         return CircularProgressIndicator();
-                       }
-                   ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 16),
                       child: TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Form ini wajib diisi';
+                          }
+                          return null;
+                        },
                         controller: _tjController,
                         textInputAction: TextInputAction.next,
                         autofocus: true,
@@ -442,12 +440,12 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                       ),
                     ),
 
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(
+                        const Text(
                           'Choose Date',
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
@@ -463,19 +461,19 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                             child: Container(
                               width: 250,
                               height: 50,
-                              margin: EdgeInsets.only(top: 2),
+                              margin: const EdgeInsets.only(top: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 color: Colors.white,
                                 border: Border.all(color: Colors.grey),),
                               child: TextFormField(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 textAlign: TextAlign.center,
                                 enabled: false,
                                 keyboardType: TextInputType.text,
                                 controller: _tanggalController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     disabledBorder:
                                     UnderlineInputBorder(borderSide: BorderSide
                                         .none),
@@ -496,36 +494,35 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                  children: [
                  ElevatedButton(
-                   child: Text('Tambah Peserta'),
+                   child: const Text('Tambah Peserta'),
                    onPressed: () => setState(() => cards.add(createCard()))),
                  ElevatedButton(
-                   child: Text('Kurangi Peserta'),
+                   child: const Text('Kurangi Peserta'),
                    onPressed: () => setState(() => cards.removeLast())),
                    ElevatedButton(
-                   child: Text('Send'),
-                   onPressed: () async {
-                     _onDone();
-
-                   FirebaseFirestore.instance
-                       .collection("users")
-                       .where("email", isEqualTo: periksa)
-                       .get().then(
-                           (QuerySnapshot snapshot) => {
+                   child: const Text('Send'),
+                   onPressed: () {
+                     if (_formKey.currentState!.validate()) {
+                       _onDone();
+                       FirebaseFirestore.instance
+                           .collection("users")
+                           .where("email", isEqualTo: periksa)
+                           .get().then(
+                               (QuerySnapshot snapshot) => {
                              if(snapshot.docs.isNotEmpty){
                                sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
                                debugPrint((snapshot.docs.first.data() as Map)["tokens"])
                              }
                            });
+                     }
+
 
                      ElegantNotification.success(
-                        title: Text('Berhasil'),
-                        description: Text('Anda Berhasil mengirim request overtime'),
+                        title: const Text('Berhasil'),
+                        description: const Text('Anda Berhasil mengirim request overtime'),
                         notificationPosition: NotificationPosition.top,
                         dismissible: true,
                        ).show(context);
-
-
-
                      }
 
                    ),
@@ -567,6 +564,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       'stepid': periksa,
       'status' : 'proses',
       'email' : '${FirebaseAuth.instance.currentUser!.email}',
+      'captanggal' : DateTime.now().toString()
     };
     await overtime.add(json);
 

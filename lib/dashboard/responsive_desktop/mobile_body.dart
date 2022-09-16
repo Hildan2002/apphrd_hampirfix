@@ -1,3 +1,4 @@
+import 'package:aplikasi_hrd/dashboard/profilepage.dart';
 import 'package:aplikasi_hrd/request/cuti_form.dart';
 import 'package:aplikasi_hrd/request/cuti_qusus.dart';
 import 'package:aplikasi_hrd/request/export_excel.dart';
@@ -23,7 +24,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _signOut() async {
+    Future<void> signOut() async {
       await FirebaseAuth.instance.signOut();
     }
     final user = FirebaseAuth.instance.currentUser!;
@@ -33,11 +34,19 @@ class _MobileScaffoldState extends State<MobileScaffold> {
     // final Stream<QuerySnapshot> _notif2 = FirebaseFirestore.instance.collection('inventaris').where('stepid', isEqualTo: user.email).snapshots();
 
     return Scaffold(
-      backgroundColor: Color(0xFFF1f1f1),
+      backgroundColor: const Color(0xFFF1f1f1),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFFF1f1f1),
-        title: Text(
+        leading: IconButton(
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ChangePassword()),
+              );
+            },
+            icon: const Icon(Icons.person_outline_outlined, color: Colors.black)),
+        backgroundColor: const Color(0xFFF1f1f1),
+        title: const Text(
           'User Profile',
           style: TextStyle(
             color: Color(0xFF22215B),
@@ -46,9 +55,9 @@ class _MobileScaffoldState extends State<MobileScaffold> {
         actions: [
           IconButton(
             onPressed: (){
-              _signOut();
+              signOut();
               },
-            icon: Icon(
+            icon: const Icon(
               Icons.logout,
               color: Color(0xFF22215B),
             ),
@@ -59,8 +68,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
       body: ListView(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 25),
-            padding: EdgeInsets.all(25),
+            margin: const EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.all(25),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -75,7 +84,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                       return Text('Error : ${snapshot.error}');
                     }
                     if(snapshot.connectionState == ConnectionState.waiting){
-                      return Text('loading');
+                      return const CircularProgressIndicator();
                     }
                     return Column(
                       children: [
@@ -83,31 +92,31 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                         //   width: 75,
                         //   height: 75,
                         // ),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         Text(
                           snapshot.data!['nama'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF22215B),
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           snapshot.data!['nik'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                           ),
                         ),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
 
                         Column(
                           children: [
                             StreamBuilder<QuerySnapshot>(
                               stream: notif,
                               builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                                  return Text('Belum Ada Permintaan Lembur',
+                                if(streamSnapshot.hasData && streamSnapshot.data!.docs.isEmpty){
+                                  return const Text('Belum Ada Permintaan Lembur',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 1,
@@ -118,7 +127,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                 return Text(
                                   "Ada Permintaan Lembur ${streamSnapshot.data?.docs.length}",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Color(0xFF22215B),
                                     fontSize: 16,
                                   ),
@@ -128,8 +137,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                             StreamBuilder<QuerySnapshot>(
                                 stream: notif1,
                                 builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                                  if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                                    return Text('Belum Ada Permintaan Cuti',
+                                  if(streamSnapshot.hasData && streamSnapshot.data!.docs.isEmpty){
+                                    return const Text('Belum Ada Permintaan Cuti',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 1,
@@ -141,7 +150,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                     "Ada Permintaan Cuti ${streamSnapshot.data?.docs.length}",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Color(0xFF22215B).withOpacity(0.6),
+                                      color: const Color(0xFF22215B).withOpacity(0.6),
                                       fontSize: 16,
                                     ),
                                   );
@@ -178,31 +187,31 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ],
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Menu",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 75,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: const [
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(
@@ -215,8 +224,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                       MaterialPageRoute(builder: (context) => const RequestOvertime())
                     );
                   },
-                  child: CardFolder(
-                    image: const Icon(Icons.more_time_sharp, size: 25,),
+                  child: const CardFolder(
+                    image: Icon(Icons.more_time_sharp, size: 25,),
                     title: "Overtime",
                     date: "Request Overtime",
                     color: Color(0xFF415EB6),
@@ -226,10 +235,10 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                   stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasError) {
-                      return Text("Something went wrong");
+                      return const Text("Something went wrong");
                     }
-                    if (snapshot.hasData && !snapshot.data!.exists) {
-                      return Text("Document does not exist");
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return const CircularProgressIndicator();
                     }
                     if(snapshot.data!['cuti'] == 'khusus') {
                         return InkWell(
@@ -239,8 +248,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                 MaterialPageRoute(
                                     builder: (context) => const RequestCutiQusus()));
                           },
-                          child: CardFolder(
-                            image: const Icon(
+                          child: const CardFolder(
+                            image: Icon(
                               Icons.card_travel,
                               size: 25,
                             ),
@@ -258,8 +267,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                               MaterialPageRoute(
                                   builder: (context) => const RequestCuti()));
                         },
-                        child: CardFolder(
-                          image: const Icon(
+                        child: const CardFolder(
+                          image: Icon(
                             Icons.card_travel,
                             size: 25,
                           ),
@@ -274,7 +283,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(
@@ -287,8 +296,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                         MaterialPageRoute(builder: (context) => const OvertimeView())
                     );
                   },
-                  child: CardFolder(
-                    image: const Icon(Icons.inventory),
+                  child: const CardFolder(
+                    image: Icon(Icons.inventory),
                     title: "Pesan",
                     date: "Pesanan Masuk",
                     color: Color(0xFFAC4040),
@@ -299,10 +308,10 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                     stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                     builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.hasError) {
-                        return Text("Something went wrong");
+                        return const Text("Something went wrong");
                       }
-                      if (snapshot.hasData && !snapshot.data!.exists) {
-                        return Text("Document does not exist");
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return const CircularProgressIndicator();
                       }
                       if(snapshot.data!['role'] == 'admin') {
                         return InkWell(
@@ -312,8 +321,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                 MaterialPageRoute(builder: (context) => const ExportExel())
                             );
                           },
-                          child: CardFolder(
-                            image: const Icon(Icons.inbox, size: 25,),
+                          child: const CardFolder(
+                            image: Icon(Icons.inbox, size: 25,),
                             // image: Image.asset("assets/icons/folder-23B0B0.png"),
                             title: "Inbox",
                             date: "Inbox Request",
@@ -325,14 +334,14 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                         return InkWell(
                           onTap: () {
                             ElegantNotification.error(
-                              title: Text('Forbidden'),
-                              description: Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
+                              title: const Text('Forbidden'),
+                              description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
                               notificationPosition: NotificationPosition.top,
                               dismissible: true,
                             ).show(context);
                           },
-                          child: CardFolder(
-                            image: const Icon(Icons.inbox, size: 25,),
+                          child: const CardFolder(
+                            image: Icon(Icons.inbox, size: 25,),
                             // image: Image.asset("assets/icons/folder-23B0B0.png"),
                             title: "Inbox",
                             date: "Inbox Request",
@@ -345,7 +354,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ],
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(
@@ -361,7 +370,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           InkWell(
             onTap: (){
               Navigator.push(
@@ -369,8 +378,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                   MaterialPageRoute(builder: (context) => const HistoryPage())
               );
             },
-            child: ListTile(
-              leading: Container(
+            child: const ListTile(
+              leading: SizedBox(
                 width: 50,
                 height: 50,
               ),
@@ -386,7 +395,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
 }
 
 class CardFolder extends StatelessWidget {
-  CardFolder({
+  const CardFolder({
     Key? key,
     required this.title,
     required this.date,
@@ -402,7 +411,7 @@ class CardFolder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       width: Get.width * 0.4,
       height: 120,
       decoration: BoxDecoration(
@@ -414,7 +423,7 @@ class CardFolder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           image,
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Text(
             title,
             style: TextStyle(
@@ -423,7 +432,7 @@ class CardFolder extends StatelessWidget {
               color: color,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
             date,
             style: TextStyle(

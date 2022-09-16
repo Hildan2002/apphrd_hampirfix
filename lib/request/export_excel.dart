@@ -615,7 +615,7 @@ class _ExportExelState extends State<ExportExel> {
                                           title: Text("Jumlah Cuti yang Diambil ${documentSnapshot['jumlahhari'].toString()}"),
                                         ),
                                         ListTile(
-                                          title: Text('Cuti Tahunan = ${documentSnapshot['cutitahunan']} \n Dispensasi = ${documentSnapshot['dispensasi']} \n Izin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']} \n sakit = ${documentSnapshot['sakit']} \n Dinas Luar = ${documentSnapshot['absen']} \n dinas luar = ${documentSnapshot['dinas luar']}'),
+                                          title: Text(formatCuti(documentSnapshot)),
                                             // title: Text("Huahahaha"),
                                         ),
                                       ],
@@ -642,6 +642,17 @@ class _ExportExelState extends State<ExportExel> {
           ),
         ),
     );
+  }
+
+  String formatCuti(DocumentSnapshot<Object?> documentSnapshot) {
+    String a = "";
+    if (documentSnapshot['cutitahunan'] != "")  a += "Cuti Tahunan = ${documentSnapshot['cutitahunan']}";
+    if (documentSnapshot['dispensasi'] != "")   a += "\nDispensasi = ${documentSnapshot['dispensasi']}";
+    if (documentSnapshot['tidakupah'] != "")    a += "\nIzin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']}";
+    if (documentSnapshot['sakit'] != "")        a += "\nSakit = ${documentSnapshot['sakit']}";
+    if (documentSnapshot['absen'] != "")        a += "\nAbsen = ${documentSnapshot['absen']}";
+    if (documentSnapshot['dinas luar'] != "")   a += "\ndinas luar = ${documentSnapshot['dinas luar']}";
+    return a;
   }
 }
 

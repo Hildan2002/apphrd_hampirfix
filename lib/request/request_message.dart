@@ -60,10 +60,10 @@ class OvertimeView extends StatelessWidget {
                       stream: overtimeform,
                       builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                         if (streamSnapshot.hasError) {
-                          return Text('Something went wrong');
+                          return const Text('Something went wrong');
                         }
                         if (streamSnapshot.connectionState == ConnectionState.waiting) {
-                          return Text("Loading");
+                          return const Text("Loading");
                         }
                         if (streamSnapshot.hasData ) {
                           return ListView.builder(
@@ -103,10 +103,10 @@ class OvertimeView extends StatelessWidget {
                       stream: cutiform,
                       builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                         if (streamSnapshot.hasError) {
-                          return Text('Something went wrong');
+                          return const Text('Something went wrong');
                         }
                         if (streamSnapshot.connectionState == ConnectionState.waiting) {
-                          return Text("Loading");
+                          return const Text("Loading");
                         }
                         if (streamSnapshot.hasData ) {
                           return ListView.builder(
@@ -114,7 +114,7 @@ class OvertimeView extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                               return Card(
-                                margin: EdgeInsets.all(5),
+                                margin: const EdgeInsets.all(5),
                                 child: ListTile(
                                   title: Text(documentSnapshot['nama_pengaju'].toString()),
                                   subtitle: Text(documentSnapshot['keterangan']),
