@@ -7,6 +7,7 @@ import 'package:aplikasi_hrd/request/export_excel.dart';
 import 'package:aplikasi_hrd/request/history.dart';
 import 'package:aplikasi_hrd/request/overtime_form.dart';
 import 'package:aplikasi_hrd/request/request_message.dart';
+import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
@@ -73,6 +74,24 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   //     title: Text(
                   //       'S E T T I N G S',
                   //       style: drawerTextColor,
+                  //     ),
+                  //   ),
+                  // ),
+                  // InkWell(
+                  //   onTap: (){
+                  //     Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(builder: (context) => const UjiCoba())
+                  //     );
+                  //   },
+                  //   child: Padding(
+                  //     padding: tilePadding,
+                  //     child: ListTile(
+                  //       leading: const Icon(Icons.person_outlined),
+                  //       title: Text(
+                  //         'Upload',
+                  //         style: drawerTextColor,
+                  //       ),
                   //     ),
                   //   ),
                   // ),

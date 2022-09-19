@@ -22,6 +22,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -76,18 +77,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: Text('Change Password'))
             ],
           ),
-          const SizedBox(height: 120),
-
           Expanded(
             child: Container(
               margin: EdgeInsets.only(bottom: context.mediaQueryPadding.bottom),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Text(
-                    'HRD APP',
-                    style: TextStyle(color: Colors.black54),
-                  ),
                   Text(
                     'v.1.0 beta',
                     style: TextStyle(color: Colors.black54),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aplikasi_hrd/main.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/foundation.dart';
@@ -26,48 +27,60 @@ class RequestCuti extends StatefulWidget {
 
 
 class _RequestCutiState extends State<RequestCuti> {
+  final storage = FirebaseStorage.instance;
   // File? image;
-  File? _pickedImage;
+  // File? _pickedImage;
+  File? _pickerImage;
   Uint8List webImage = Uint8List(8);
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> getImage() async {
-    if(!kIsWeb){
-      final ImagePicker _picker = ImagePicker();
-      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if(image != null){
-        var selected = File(image.path);
-        setState(() {
-          _pickedImage = selected;
-        });
-      } else{
-        debugPrint('error mas');
-      }
-    } else if (kIsWeb){
-      final ImagePicker _picker = ImagePicker();
-      XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if(image != null){
-        var f = await image.readAsBytes();
-        setState(() {
-            webImage = f;
-            _pickedImage = File('a');
-        });
-      } else{
-        debugPrint('error mas');
-      }
-    } else {
-      debugPrint('ana sing error');
-    }
-    // final ImagePicker _picker = ImagePicker();
-    // final XFile? imagePicked =
-    //     await _picker.pickImage(source: ImageSource.gallery);
-    // if (kIsWeb) {
-    //   Image.network(imagePicked!.path);
-    // } else {
-    //   image = File(imagePicked!.path);    }
-    // setState(() {});
-  }
+  // Future<File> compressFile(File file) async{
+  //   File compressedFile = await FlutterNativeImage.compressImage(file.path,
+  //     quality: 5,);
+  //   return compressedFile;
+  // }
+
+  // Future getImage() async {
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Clear 2")));
+  //   if(!kIsWeb){
+  //     final ImagePicker _picker = ImagePicker();
+  //     XFile? image = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 640);
+  //     if(image != null){
+  //       var selected = File(image.path);
+  //       setState(() {
+  //         _pickedImage = selected;
+  //         // _pickedImage = compressFile(selected);
+  //       });
+  //     } else{
+  //       debugPrint('error mas');
+  //     }
+  //   } else if (kIsWeb){
+  //     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Clear 3")));
+  //     final ImagePicker _picker = ImagePicker();
+  //     XFile? image = await _picker.pickImage(source: ImageSource.camera);
+  //     if(image != null){
+  //       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Clear 4")));
+  //       var f = await image.readAsBytes();
+  //       setState(() {
+  //           webImage = f;
+  //           _pickedImage = File('a');
+  //       });
+  //     } else{
+  //       debugPrint('error mas');
+  //     }
+  //   } else {
+  //     debugPrint('ana sing error');
+  //   }
+  //   // final ImagePicker _picker = ImagePicker();
+  //   // final XFile? imagePicked =
+  //   //     await _picker.pickImage(source: ImageSource.gallery);
+  //   // if (kIsWeb) {
+  //   //   Image.network(imagePicked!.path);
+  //   // } else {
+  //   //   image = File(imagePicked!.path);    }
+  //   // setState(() {});
+  // }
 
   void sendPushMessage(String token) async {
     try {
@@ -164,7 +177,7 @@ class _RequestCutiState extends State<RequestCuti> {
   }
 
 
-  late String dateTime;
+  String? dateTime;
 
   DateTime selectedDate = DateTime.now();
 
@@ -185,7 +198,7 @@ class _RequestCutiState extends State<RequestCuti> {
     }
   }
 
-  late String dateTime2;
+  String? dateTime2;
 
   DateTime selectedDate2 = DateTime.now();
 
@@ -303,8 +316,11 @@ class _RequestCutiState extends State<RequestCuti> {
 
   }
 
+  String? path;
+
   @override
   Widget build(BuildContext context) {
+    final Storage storage = Storage();
     var imel = FirebaseAuth.instance.currentUser!.email;
     return BackdropScaffold(
           backLayerBackgroundColor: Colors.lightBlueAccent,
@@ -630,44 +646,71 @@ class _RequestCutiState extends State<RequestCuti> {
                             ),
                           ],
                         ),
-
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _pickedImage != null
-                                  ? Container(
-                                  height: MediaQuery.of(context).size.height,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: kIsWeb?
-                                      Image.memory(webImage, fit: BoxFit.cover,):
-                                      Image.file(_pickedImage!, fit: BoxFit.cover,)
+                              _pickerImage != null
+                                  ? GestureDetector(
+                                onTap: (){fullSizeNih(context);},
+                                child: Hero(
+                                  tag: "nihBuktiNih",
+                                  child: SizedBox(
+                                      height: 100,
+                                      width: 100,
+                                      child: Image.file(_pickerImage!, fit: BoxFit.cover,)
+                                  ),
+                                ),
                               )
                                   : Container(),
-                              ElevatedButton(
-                                  style:
-                                      TextButton.styleFrom(backgroundColor: Colors.blueAccent),
-                                  onPressed: () async {
-                                    try{
-                                      getImage();
-                                    } catch (error){
-                                      ElegantNotification.error(
-                                        title: Text('Berhasil'),
-                                        description: Text('$error'),
-                                        notificationPosition: NotificationPosition.top,
-                                        dismissible: true,
-                                      ).show(context);
-                                    }
-                                  },
-                                  child: Text(
-                                    'Upload Bukti Surat Dokter',
-                                    style: TextStyle(color: Colors.white),
-                                  ))
+
                             ],
                           ),
                         ),
+
+                        Center(
+                          child: ElevatedButton(
+                              style: TextButton.styleFrom(backgroundColor: Colors.blueAccent, maximumSize: MediaQuery.of(context).size),
+                              onPressed: () async {
+                                final result = await FilePicker.platform.pickFiles(
+                                  allowMultiple: false,
+                                  type: FileType.custom,
+                                  allowedExtensions: ['png', 'jpg', 'jpeg'],
+                                );
+
+                                if (result == null){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('No File Selected.')
+                                      )
+                                  );
+                                  return;
+                                } else {
+                                  path = result.files.single.path;
+                                  setState(() {
+                                    _pickerImage = File((result.files.single.path)!);
+                                  });
+                                }
+                                // try{
+                                //   getImage();
+                                // } catch (error){
+                                //   ElegantNotification.error(
+                                //     title: Text('Berhasil'),
+                                //     description: Text('$error'),
+                                //     notificationPosition: NotificationPosition.top,
+                                //     dismissible: true,
+                                //   ).show(context);
+                                // }
+                              },
+                              child: const Text(
+                                'Upload Bukti Surat Dokter',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ),
+
+                        SizedBox(height: 20),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -680,17 +723,20 @@ class _RequestCutiState extends State<RequestCuti> {
                                     style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
                                     child: const Text('Back'),
                                     onPressed: ()  {
-                                      // Navigator.pop(context);
-                                      try{
-                                        getImage();
-                                      } catch (error){
-                                        ElegantNotification.error(
-                                          title: Text('Berhasil'),
-                                          description: Text('$error'),
-                                          notificationPosition: NotificationPosition.top,
-                                          dismissible: true,
-                                        ).show(context);
-                                      }
+                                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Clear")));
+                                      Navigator.pop(context);
+                                      // try{
+                                      //   getImage();
+                                      //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Clear 1")));
+                                      // } catch (error){
+                                      //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error 1")));
+                                      //   ElegantNotification.error(
+                                      //     title: Text('Berhasil'),
+                                      //     description: Text('$error'),
+                                      //     notificationPosition: NotificationPosition.top,
+                                      //     dismissible: true,
+                                      //   ).show(context);
+                                      // }
                                     }
 
                                 ),
@@ -707,6 +753,10 @@ class _RequestCutiState extends State<RequestCuti> {
                                     child: const Text('Kirim'),
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
+                                        storage
+                                            .uploadFile(path!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
+                                            //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
+                                            .then((value) => print('Done'));
                                         _onDone();
                                         FirebaseFirestore.instance
                                             .collection("users")
@@ -721,7 +771,7 @@ class _RequestCutiState extends State<RequestCuti> {
 
                                         ElegantNotification.success(
                                           title: const Text('Berhasil'),
-                                          description: const Text('Anda Berhasil mengirim request overtime'),
+                                          description: const Text('Anda Berhasil mengirim request cuti'),
                                           notificationPosition: NotificationPosition.top,
                                           dismissible: true,
                                         ).show(context);
@@ -733,8 +783,6 @@ class _RequestCutiState extends State<RequestCuti> {
 
                           ]
                         ),
-
-
                       ],
                     ),
             ),
@@ -743,7 +791,6 @@ class _RequestCutiState extends State<RequestCuti> {
                     padding: const EdgeInsets.all(10),
                     color: Colors.white,
                     child: FirebaseAnimatedList(
-                          // query: FirebaseDatabase.instance.ref().child("1WN6-rKKfO8AryfhtQ7ZbDxZcGLEM7W45Qm2I7bmmfu4/Sheet1/${(FirebaseAuth.instance.currentUser!.email).indexOf(pattern)}"),
                           query: FirebaseDatabase.instance.ref().child("1WN6-rKKfO8AryfhtQ7ZbDxZcGLEM7W45Qm2I7bmmfu4/Sheet1/A${(imel)?.substring(imel.indexOf("@")+1, imel.indexOf("."))}"),
                           itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index){
                             // Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
@@ -772,7 +819,7 @@ class _RequestCutiState extends State<RequestCuti> {
     required DateTime tanggal2,
     required String? secdept,
     required String? periksa}) async {
-    final overtime = FirebaseFirestore.instance.collection('cuti');
+    final cutii = FirebaseFirestore.instance.collection('cuti');
     var inputTime = DateTime.now();
     final json = <String, dynamic>{
       'idtime': inputTime,
@@ -792,14 +839,31 @@ class _RequestCutiState extends State<RequestCuti> {
       'dinas luar' : dinasluar,
       'status' : 'proses',
       'email' : '${FirebaseAuth.instance.currentUser!.email}',
+      'bukti' : await FirebaseStorage.instance.ref().child('cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}').getDownloadURL(),
 
     };
-    await overtime.add(json);
+    await cutii.add(json);
 
     //todo: add notification
 
     debugPrint('json: $json');
     // }
+  }
+
+  fullSizeNih(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>
+        Scaffold(
+          body: Center(
+            child: GestureDetector(
+              onTap: (){Navigator.pop(context);},
+              child: Hero(
+                tag: "nihBuktiNih",
+                child: Image.file(_pickerImage!),
+              ),
+            ),
+          ),
+        )
+    ));
   }
 
 }
@@ -857,16 +921,23 @@ class Lembur {
 
   Lembur(String name_pic, String tanggal, String shift, String secdept);
 }
-// class Employee {
-//   var name, nik, job, jamawal, jamkhir;
-//
-//   Employee(this.name, this.nik, this.job, this.jamawal, this.jamkhir);
-//
-//   Map<String, dynamic> toJson() => {
-//     'name':name,
-//     'nik':nik,
-//     'job':job,
-//     'jamawal':jamawal,
-//     'jamkhir':jamkhir,
-//   };
-// }
+
+class Storage{
+  final storage = FirebaseStorage.instance;
+
+  Future<void> uploadFile(
+      String filePath,
+      String fileName,
+      ) async {
+    File file = File(filePath);
+
+    try{
+      await storage.ref('cuti/$fileName').putFile(file);
+    } on FirebaseException catch (e){
+      print(e);
+    }
+
+
+  }
+
+}

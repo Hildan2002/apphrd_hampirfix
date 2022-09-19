@@ -1,12 +1,15 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+
+import 'cuti_form.dart';
 
 
 class Cutidetail extends StatefulWidget {
@@ -51,8 +54,18 @@ class _CutidetailState extends State<Cutidetail> {
 
   @override
   Widget build(BuildContext context) {
+    final Storage storage = Storage();
+
     String? periksa2;
+
     final user = FirebaseAuth.instance.currentUser!;
+
+    // String? ururu;
+    // FirebaseStorage.instance.ref().child("cuti/ayuandini@0916").getDownloadURL().then((value) {
+    //   setState((){
+    //     ururu = value;
+    //   });
+    // });
     final Stream<QuerySnapshot> cutiform = FirebaseFirestore.instance.collection('cuti').where("idtime", isEqualTo: widget.timestamp).snapshots();
 
     switch(user.email){
@@ -218,24 +231,25 @@ class _CutidetailState extends State<Cutidetail> {
                                       ),
                                     ),
 
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: Container(
-                                    //     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                    //     decoration: BoxDecoration(
-                                    //       borderRadius: BorderRadius.circular(12),
-                                    //       color: Colors.white,
-                                    //       border: Border.all(color: Colors.grey),
-                                    //     ),
-                                    //     child: Padding(
-                                    //       padding: const EdgeInsets.only(left: 8.0),
-                                    //       child:ListTile(
-                                    //         title: Text(documentSnapshot['section'].toString()),
-                                    //         subtitle: Text('Department'),
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
+                                    documentSnapshot['section'] == null && documentSnapshot['section'] == '' ? Container() :
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.grey),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child:ListTile(
+                                            title: Text(documentSnapshot['section'].toString()),
+                                            subtitle: Text('Department'),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
 
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -292,8 +306,34 @@ class _CutidetailState extends State<Cutidetail> {
                                           ),
                                         ),
                                       ),
-                                    )
+                                    ),
 
+                                    documentSnapshot['bukti'] == null && documentSnapshot['bukti'] == '' ? Container()
+                                        : GestureDetector(
+                                         onTap: (){
+                                           Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>
+                                               Scaffold(
+                                                 body: Center(
+                                                   child: GestureDetector(
+                                                     onTap: (){Navigator.pop(context);},
+                                                     child: Hero(
+                                                       tag: "nihBuktiNih",
+                                                       child: Image.network(documentSnapshot['bukti']),
+                                                     ),
+                                                   ),
+                                                 ),
+                                               )
+                                           ));
+                                           },
+                                          child: Hero(
+                                           tag: "nihBuktiNih",
+                                           child: SizedBox(
+                                            height: 100,
+                                            width: 100,
+                                            child: Image.network(documentSnapshot['bukti'], fit: BoxFit.cover,)
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -405,7 +445,7 @@ class _CutidetailState extends State<Cutidetail> {
 
   String formatCuti(DocumentSnapshot<Object?> documentSnapshot) {
     String a = "";
-    if (documentSnapshot['cutitahunan'] != "")  a += "Cuti Tahunan = ${documentSnapshot['cutitahunan']}";
+    if (documentSnapshot['cutitahunan'] != "")  a += "\nCuti Tahunan = ${documentSnapshot['cutitahunan']}";
     if (documentSnapshot['dispensasi'] != "")   a += "\nDispensasi = ${documentSnapshot['dispensasi']}";
     if (documentSnapshot['tidakupah'] != "")    a += "\nIzin Tidak Mendapatkan Upah = ${documentSnapshot['tidakupah']}";
     if (documentSnapshot['sakit'] != "")        a += "\nSakit = ${documentSnapshot['sakit']}";
@@ -413,4 +453,20 @@ class _CutidetailState extends State<Cutidetail> {
     if (documentSnapshot['dinas luar'] != "")   a += "\ndinas luar = ${documentSnapshot['dinas luar']}";
     return a;
   }
+
+  // void fullSizeNih(BuildContext context) {
+  //     Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>
+  //         Scaffold(
+  //           body: Center(
+  //             child: GestureDetector(
+  //               onTap: (){Navigator.pop(context);},
+  //               child: Hero(
+  //                 tag: "nihBuktiNih",
+  //                 child: Image.network(),
+  //               ),
+  //             ),
+  //           ),
+  //         )
+  //     ));
+  // }
 }

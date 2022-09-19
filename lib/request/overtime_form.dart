@@ -410,11 +410,18 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                       ),
                     ),
 
-                    ListTile(
-                      title: const Text('Pilih Department :'),
-                      trailing: DropdownButton(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      child: DropdownButtonFormField(
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Form ini wajib dipilih';
+                          }
+                          return null;
+                        },
                         value: _butonSelected1,
-                        hint: const Text('pilih'),
+                        hint: const Text('Pilih Department'),
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
@@ -425,11 +432,18 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                       ),
                     ),
 
-                    ListTile(
-                      title: const Text('Pilih Shift :'),
-                      trailing: DropdownButton(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
+                      child: DropdownButtonFormField(
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Form ini wajib dipilih';
+                          }
+                          return null;
+                        },
                         value: _butonSelected2,
-                        hint: const Text('pilih'),
+                        hint: const Text('Pilih Shift'),
                         onChanged: (String? newValue) {
                           if (newValue != null) {
                             setState(() {
@@ -439,6 +453,36 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                         }, items: _dropDownMenuItems2,
                       ),
                     ),
+
+                    // ListTile(
+                    //   title: const Text('Pilih Department :'),
+                    //   trailing: DropdownButton(
+                    //     value: _butonSelected1,
+                    //     hint: const Text('pilih'),
+                    //     onChanged: (String? newValue) {
+                    //       if (newValue != null) {
+                    //         setState(() {
+                    //           _butonSelected1 = newValue;
+                    //         });
+                    //       }
+                    //     }, items: _dropDownMenuItems,
+                    //   ),
+                    // ),
+
+                    // ListTile(
+                    //   title: const Text('Pilih Shift :'),
+                    //   trailing: DropdownButton(
+                    //     value: _butonSelected2,
+                    //     hint: const Text('pilih'),
+                    //     onChanged: (String? newValue) {
+                    //       if (newValue != null) {
+                    //         setState(() {
+                    //           _butonSelected2 = newValue;
+                    //         });
+                    //       }
+                    //     }, items: _dropDownMenuItems2,
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 10),
 

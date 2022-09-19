@@ -407,7 +407,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['section'].toString()),
+                                    title: documentSnapshot['section'] == null && documentSnapshot['section'] == '' ? Text(documentSnapshot['status']) :
+                                    Text(documentSnapshot['section'].toString()),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
