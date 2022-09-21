@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -72,6 +73,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         FirebaseAuth.instance.currentUser!.updatePassword(_PasswordbaruController.text);
                         FirebaseAuth.instance.signOut();
                       });
+                      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'password' : _PasswordbaruController});
 
                     },
                     child: Text('Change Password'))

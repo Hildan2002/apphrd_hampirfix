@@ -43,10 +43,12 @@ class Overtimeinside extends StatelessWidget {
   final Timestamp timestamp;
 
 
+
   const Overtimeinside({Key? key, required this.timestamp}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String? status;
     String? periksa2;
     final user = FirebaseAuth.instance.currentUser!;
     final Stream<QuerySnapshot> _overtimeform = FirebaseFirestore.instance.collection('overtime').where("idtime", isEqualTo: timestamp).snapshots();
@@ -54,25 +56,30 @@ class Overtimeinside extends StatelessWidget {
     switch(user.email){
       case 'ayuandini@0916.nsi':
         periksa2 = 'Approve@';
+        status = 'done';
         break;
       case 'yujiro@takeuchi.nsi':
       case 'yuki@takahashi.nsi':
       case 'adi@0947.nsi':
       case 'widodo@0368.nsi':
         periksa2 = 'ayuandini@0916.nsi';
+        status = 'proses';
         break;
       case 'rohmad@0167.nsi'  :
       case  'samsu@0012.nsi' :
       case 'cep@0178.nsi'  :
         periksa2 = 'widodo@0368.nsi';
+        status = 'proses';
         break;
       case 'harlan@0693.nsi':
         periksa2 = 'yuki@takahashi.nsi';
+        status = 'proses';
         break;
       case 'sumadi@0068.nsi':
       case 'dedi@0519.nsi':
       case 'yana@0175.nsi':
         periksa2 = 'adi@0947.nsi';
+        status = 'proses';
         break;
       default :
         periksa2 = 'error';
@@ -82,11 +89,11 @@ class Overtimeinside extends StatelessWidget {
 
 
     Future<void> _update([DocumentSnapshot? documentSnapshot]) async{
-      await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : periksa2});
+      await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : periksa2, 'status' : status,'captanggal' : DateTime.now().toString()});
       Navigator.pop(context);
     }
     Future<void> _updateT([DocumentSnapshot? documentSnapshot]) async{
-      await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : 'tolak', 'proses' : 'done'});
+      await FirebaseFirestore.instance.collection('overtime').doc(documentSnapshot!.id).update({'stepid' : 'tolak@', 'status' : 'done', 'captanggal' : DateTime.now().toString()});
       Navigator.pop(context);
     }
 

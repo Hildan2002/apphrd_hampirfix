@@ -7,7 +7,6 @@ import 'package:aplikasi_hrd/request/export_excel.dart';
 import 'package:aplikasi_hrd/request/history.dart';
 import 'package:aplikasi_hrd/request/overtime_form.dart';
 import 'package:aplikasi_hrd/request/request_message.dart';
-import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
@@ -77,24 +76,6 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   //     ),
                   //   ),
                   // ),
-                  InkWell(
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const UjiCoba())
-                      );
-                    },
-                    child: Padding(
-                      padding: tilePadding,
-                      child: ListTile(
-                        leading: const Icon(Icons.person_outlined),
-                        title: Text(
-                          'Halaman lain',
-                          style: drawerTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
 
                   InkWell(
                     onTap: (){
@@ -106,9 +87,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     child: Padding(
                       padding: tilePadding,
                       child: ListTile(
-                        leading: const Icon(Icons.person_outlined),
+                        leading: const Icon(Icons.lock),
                         title: Text(
-                          'P R O F I L',
+                          'G A N T I   P A S S W O R D',
                           style: drawerTextColor,
                         ),
                       ),

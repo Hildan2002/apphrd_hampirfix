@@ -53,12 +53,12 @@ class _ExportExelState extends State<ExportExel> {
 
     final Stream<QuerySnapshot> _export = FirebaseFirestore.instance.collection('overtime')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
-        .where('stepid', isEqualTo: 'Approve')
+        .where('stepid', isEqualTo: 'Approve@')
         // .orderBy('shift', descending: false)
         .snapshots();
     final Stream<QuerySnapshot> _exportC = FirebaseFirestore.instance.collection('cuti')
         .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
-        .where('stepid', isEqualTo: 'Approve')
+        .where('stepid', isEqualTo: 'Approve@')
         .snapshots();
     return DefaultTabController(
       length: 2,

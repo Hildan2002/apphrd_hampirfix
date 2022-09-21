@@ -88,7 +88,7 @@ class _HistoryPageState extends State<HistoryPage> {
             unselectedLabelColor: Colors.grey,
             tabs: [
               Tab(
-                text: 'Progress OT',
+                text: 'Progress Overtime',
                 icon: Icon(
                   Icons.book_outlined,
                   color: Colors.white,
@@ -97,7 +97,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
 
               Tab(
-                text: 'Request Cuti',
+                text: 'Progress Cuti',
                 icon: Icon(
                   Icons.beach_access,
                   color: Colors.white,
@@ -200,16 +200,16 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['stepid'].toString()),
+                                    title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
                                         title: Text('Dokumen ini telah diterima pada ${documentSnapshot['captanggal'].toString().substring(0,documentSnapshot['captanggal'].toString().indexOf("."))} '
-                                            'dan akan diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
+                                            'dan sedang diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
                                         )}'),
                                       ),
                                       ListTile(
-                                        title: Text("Tanggal : ${tanggal.substring(0,10)}"),
+                                        title: Text("Tanggal diajukan: ${tanggal.substring(0,10)}"),
                                       ),
                                       ListTile(
                                         title: Text(documentSnapshot['shift'].toString()),
@@ -300,9 +300,14 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['section'].toString()),
+                                    title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
+                                      ListTile(
+                                        title: Text('Dokumen ini telah diterima pada ${documentSnapshot['captanggal'].toString().substring(0,documentSnapshot['captanggal'].toString().indexOf("."))} '
+                                            'dan sedang diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
+                                        )}'),
+                                      ),
                                       ListTile(
                                         title: Text("Nama Pengaju: ${documentSnapshot['nama_pengaju'].toString()}"),
                                       ),
@@ -407,8 +412,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: documentSnapshot['section'] == null && documentSnapshot['section'] == '' ? Text(documentSnapshot['status']) :
-                                    Text(documentSnapshot['section'].toString()),
+                                    title: documentSnapshot['stepid'] == null && documentSnapshot['stepid'] == '' ? Text(documentSnapshot['stepid']) :
+                                    Text('Permintaan Anda telah di' + documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf('@'))),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
@@ -418,7 +423,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                         title: Text("Tanggal : ${tanggal.substring(0,10)}"),
                                       ),
                                       ListTile(
-                                        title: Text("Shift ${documentSnapshot['shift'].toString()}"),
+                                        title: Text("${documentSnapshot['shift'].toString()}"),
                                       ),
                                       ListTile(
                                         title: Text(daftarPeserta),
@@ -506,7 +511,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['section'].toString()),
+                                    title: documentSnapshot['stepid'] == null && documentSnapshot['stepid'] == '' ? Text(documentSnapshot['stepid']) :
+                                    Text('Permintaan Anda telah di${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf('@'))}'),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(

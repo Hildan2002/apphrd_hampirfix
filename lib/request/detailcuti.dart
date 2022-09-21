@@ -2,16 +2,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // import 'cuti_form.dart';
@@ -62,40 +56,40 @@ class _CutidetailState extends State<Cutidetail> {
     // final Storage storage = Storage();
 
     String? periksa2;
+    String? status;
 
     final user = FirebaseAuth.instance.currentUser!;
 
-    // String? ururu;
-    // FirebaseStorage.instance.ref().child("cuti/ayuandini@0916").getDownloadURL().then((value) {
-    //   setState((){
-    //     ururu = value;
-    //   });
-    // });
     final Stream<QuerySnapshot> cutiform = FirebaseFirestore.instance.collection('cuti').where("idtime", isEqualTo: widget.timestamp).snapshots();
 
     switch(user.email){
       case 'ayuandini@0916.nsi':
       case 'viola@0962.nsi':
         periksa2 = 'Approve@';
+        status = 'done';
         break;
       case 'yuki@takahashi.nsi':
       case 'adi@0947.nsi':
       case 'widodo@0368.nsi':
       case 'yujiro@takeuchi' :
         periksa2 = 'ayuandini@0916.nsi';
+        status = 'proses';
         break;
       case 'rohmad@0167.nsi'  :
       case  'samsu@0012.nsi' :
       case 'cep@0178.nsi'  :
         periksa2 = 'widodo@0368.nsi';
+        status = 'proses';
         break;
       case 'harlan@0693.nsi':
         periksa2 = 'yuki@takahashi.nsi';
+        status = 'proses';
         break;
       case 'sumadi@0068.nsi':
       case 'dedi@0519.nsi':
       case 'yana@0175.nsi':
         periksa2 = 'adi@0947.nsi';
+        status = 'proses';
         break;
       default :
         periksa2 = 'Anda Belum Input Department@';
@@ -103,13 +97,13 @@ class _CutidetailState extends State<Cutidetail> {
     debugPrint(periksa2);
 
     Future<void> _updateT([DocumentSnapshot? documentSnapshot]) async{
-      await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot!.id).update({'stepid' : 'tolak@', 'status' : 'done'});
+      await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot!.id).update({'stepid' : 'tolak@', 'status' : 'done', 'captanggal' : DateTime.now().toString()});
       // await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot.id).update({'stepid1' : periksa3});
       Navigator.pop(context);
     }
 
     Future<void> _update([DocumentSnapshot? documentSnapshot]) async{
-      await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot!.id).update({'stepid' : periksa2, 'status' : 'proses'});
+      await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot!.id).update({'stepid' : periksa2, 'status' : status, 'captanggal' : DateTime.now().toString()});
       // await FirebaseFirestore.instance.collection('cuti').doc(documentSnapshot.id).update({'stepid1' : periksa3});
       Navigator.pop(context);
     }
@@ -161,24 +155,6 @@ class _CutidetailState extends State<Cutidetail> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
-                                          color: Colors.white,
-                                          border: Border.all(color: Colors.grey),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 8.0),
-                                          child:ListTile(
-                                            title: Text(documentSnapshot['email'].toString()),
-                                            subtitle: Text('Form ini Dikirim Oleh'),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: Container(
@@ -313,7 +289,7 @@ class _CutidetailState extends State<Cutidetail> {
                                       ),
                                     ),
 
-                                    documentSnapshot['bukti'] == null && documentSnapshot['bukti'] == '' ? Container()
+                                    documentSnapshot['bukti'] == null || documentSnapshot['bukti'] == '' ? Container()
                                         : GestureDetector(
                                          onTap: (){
                                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>
@@ -349,6 +325,7 @@ class _CutidetailState extends State<Cutidetail> {
                                         ),
                                       ),
                                     ),
+                                    documentSnapshot['bukti'] == null || documentSnapshot['bukti'] == '' ? Container() :
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           shape: RoundedRectangleBorder(
@@ -488,44 +465,6 @@ class _CutidetailState extends State<Cutidetail> {
     if (documentSnapshot['absen'] != "")        a += "\nAbsen = ${documentSnapshot['absen']}";
     if (documentSnapshot['dinas luar'] != "")   a += "\ndinas luar = ${documentSnapshot['dinas luar']}";
     return a;
-  }
-
-  Future<void> downloadFile(String link) async {
-    await FlutterDownloader.enqueue(
-      url: link,
-      showNotification: true,
-      openFileFromNotification: true,
-      savedDir: '/storage/emulated/0/Download/'
-    );
-    // final Directory appDocDir = await getApplicationDocumentsDirectory();
-    // final String appDocPath = appDocDir.path;
-    // final File tempFile = File(appDocPath);
-    // try {
-    //   await FirebaseStorage.instance
-    //       .ref('cuti/alvin@0891.jpg').writeToFile(tempFile);
-    //   await tempFile.create();
-    //   await OpenFile.open(tempFile.path);
-    // } on FirebaseException {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(
-    //         'Error, file tidak bisa diunduh',
-    //         style: Theme.of(context).textTheme.bodyText1,
-    //       ),
-    //     ),
-    //   );
-    // }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content:Text(
-            'File Berhasil diunduh',
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).primaryColorLight,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0))),
-    );
   }
   // void fullSizeNih(BuildContext context) {
   //     Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>

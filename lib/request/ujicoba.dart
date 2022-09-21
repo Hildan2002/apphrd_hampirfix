@@ -648,7 +648,6 @@ List<String> kerjaan = [
   'NID',
   'OQC',
 ];
-List<String> suggestons = ["USA", "UK", "Uganda", "Uruguay", "United Arab Emirates"];
 
 class _UjiCobaState extends State<UjiCoba> {
   // final a = FirebaseFirestore.instance.collection('users').snapshots();

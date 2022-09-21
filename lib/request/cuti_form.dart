@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:elegant_notification/elegant_notification.dart';
@@ -188,16 +189,20 @@ class _RequestCutiState extends State<RequestCuti> {
         initialDate: selectedDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
+        selectableDayPredicate: (DateTime val) =>
+          val.weekday == 6 || val.weekday == 7 ? false : true,
         lastDate: DateTime(2101));
     if (picked != null) {
       setState(() {
         selectedDate = picked;
         _tanggalController.text = DateFormat.yMMMEd().format(selectedDate);
+        tanggalOtomatis(_tanggalController.text, harii: _jumlahhariController.text);
       });
     }
   }
 
   String? dateTime2;
+  bool lampiran = false;
 
   DateTime selectedDate2 = DateTime.now();
 
@@ -208,6 +213,8 @@ class _RequestCutiState extends State<RequestCuti> {
         context: context,
         initialDate: selectedDate2,
         initialDatePickerMode: DatePickerMode.day,
+        selectableDayPredicate: (DateTime val) =>
+        val.weekday == 6 || val.weekday == 7 ? false : true,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
     if (picked != null) {
@@ -220,8 +227,8 @@ class _RequestCutiState extends State<RequestCuti> {
 
   @override
   void initState() {
-    _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
     _tanggalController.text = DateFormat.yMMMEd().format(DateTime.now());
+    _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
     super.initState();
 
     FirebaseMessaging.onMessage.listen(showFlutterNotification);
@@ -239,8 +246,11 @@ class _RequestCutiState extends State<RequestCuti> {
   }
 
   String? periksa;
+  String pengaju = FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf('@'));
+  String nameid = FirebaseAuth.instance.currentUser!.email.toString().substring(FirebaseAuth.instance.currentUser!.email.toString().indexOf('@')+1, FirebaseAuth.instance.currentUser!.email.toString().indexOf('.'));
 
   _onDone() {
+    debugPrint("ondony");
     var cutitahunan = _cutitahunanController.text;
     var dispensasi = _dispensasiController.text;
     var izintidakupah = _izintidakupahController.text;
@@ -248,9 +258,9 @@ class _RequestCutiState extends State<RequestCuti> {
     var absen = _absenController;
     var dinasluar = _dinasluarController.text;
     var jumlahHari = _jumlahhariController;
-    var nik = _nikController;
+    // var nik = _nikController;
     var keterangan = _keteranganController;
-    var namePic = _atasnamaController.text;
+    // var namePic = _atasnamaController.text;
     var tanggal = selectedDate;
     var tanggal2 = selectedDate2;
     var secdept = _butonSelected1;
@@ -294,12 +304,16 @@ class _RequestCutiState extends State<RequestCuti> {
     }
     debugPrint(periksa);
 
-    CRUD(name_pengaju: namePic,
+    debugPrint("name_pengaju "+ pengaju);
+    debugPrint("nik "+ nameid);
+
+    CRUD(
+      name_pengaju: pengaju,
+      nik: nameid,
       tanggal: tanggal,
       secdept: secdept,
       periksa: periksa,
       tanggal2: tanggal2,
-      nik: nik.text,
       keterangan: keterangan.text,
       jumlah_hari: jumlahHari.text,
       cutitahunan: cutitahunan,
@@ -308,6 +322,7 @@ class _RequestCutiState extends State<RequestCuti> {
       sakit: sakit.text,
       absen: absen.text,
       dinasluar: dinasluar,
+      adaFile: lampiran
     );
 
 
@@ -318,11 +333,11 @@ class _RequestCutiState extends State<RequestCuti> {
   String? path, pathWeb, filenamec;
   Uint8List? fileBytes;
 
-  static const List<String> _kOptions = <String>[
-    'aardvark',
-    'bobcat',
-    'chameleon',
-  ];
+  // static const List<String> _kOptions = <String>[
+  //   'aardvark',
+  //   'bobcat',
+  //   'chameleon',
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -341,69 +356,137 @@ class _RequestCutiState extends State<RequestCuti> {
             ),
           ),
           headerHeight: 120,
-          frontLayer: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
+          frontLayer: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
               child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                          child: Autocomplete<String>(
-                            optionsBuilder: (TextEditingValue textEditingValue) {
-                          if (textEditingValue.text == '') {
-                          return const Iterable<String>.empty();
-                          }
-                          return _kOptions.where((String option) {
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                        //   child: Autocomplete<String>(
+                        //     optionsBuilder: (TextEditingValue textEditingValue) {
+                        //   if (textEditingValue.text == '') {
+                        //   return const Iterable<String>.empty();
+                        //   }
+                        //   return _kOptions.where((String option) {
+                        //
+                        //   return option.contains(textEditingValue.text.toLowerCase());
+                        //
+                        //   });
+                        //   },
+                        //     onSelected: (String selection) {
+                        //       debugPrint('You just selected $selection');
+                        //     },
+                        //   ),
+                        // ),
 
-                          return option.contains(textEditingValue.text.toLowerCase());
+                        // RawAutocomplete(
+                        //     optionsBuilder: (TextEditingValue textEditingValue) {
+                        //       if (textEditingValue.text == '') {
+                        //         return const Iterable<String>.empty();
+                        //       }
+                        //       return nama.where((String option) {
+                        //         return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                        //       });
+                        //     },
+                        //
+                        //     fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+                        //         FocusNode focusNode,
+                        //         VoidCallback onFieldSubmitted) {
+                        //       return Padding(
+                        //         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                        //         child: TextFormField(
+                        //           autofocus: true,
+                        //           validator: (value) {
+                        //             if (value == null || value.isEmpty) {
+                        //               return 'Form ini wajib diisi';
+                        //             }
+                        //             return null;
+                        //           },
+                        //           decoration: const InputDecoration(
+                        //               border: UnderlineInputBorder(),
+                        //               labelText: 'Nama'
+                        //
+                        //           ),
+                        //           controller: texteditingcontroller,
+                        //           focusNode: focusNode,
+                        //           textInputAction: TextInputAction.next,
+                        //           onFieldSubmitted: (String selection) {
+                        //             _atasnamaController.text = texteditingcontroller.text;
+                        //           },
+                        //         ),
+                        //       );
+                        //     },
+                        //     optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+                        //         Iterable<String> options) {
+                        //       return Material(
+                        //           child: SizedBox(
+                        //               height: 200,
+                        //               child: SingleChildScrollView(
+                        //                   child: Column(
+                        //                     children: options.map((opt) {
+                        //                       return GestureDetector(
+                        //                           onTap: () {
+                        //                             onSelected(opt);
+                        //                             _nikController.text = nik[nama.indexOf(opt)];
+                        //                           },
+                        //                           child: Container(
+                        //                               padding: const EdgeInsets.only(right: 60),
+                        //                               child: Card(
+                        //                                   child: Container(
+                        //                                     width: double.infinity,
+                        //                                     padding: const EdgeInsets.all(10),
+                        //                                     child: Text(opt),
+                        //                                   )
+                        //                               )
+                        //                           )
+                        //                       );
+                        //                     }).toList(),
+                        //                   )
+                        //               )
+                        //           )
+                        //       );
+                        //     }),
 
-                          });
-                          },
-                            onSelected: (String selection) {
-                              debugPrint('You just selected $selection');
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Form ini wajib diisi';
-                              }
-                              return null;
-                            },
-                            controller: _atasnamaController,
-                            textInputAction: TextInputAction.next,
-                            // autofocus: true,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Nama Bersangkutan',
-                            ),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                        //   child: TextFormField(
+                        //     validator: (value) {
+                        //       if (value == null || value.isEmpty) {
+                        //         return 'Form ini wajib diisi';
+                        //       }
+                        //       return null;
+                        //     },
+                        //     controller: _atasnamaController,
+                        //     textInputAction: TextInputAction.next,
+                        //     // autofocus: true,
+                        //     decoration: const InputDecoration(
+                        //       border: UnderlineInputBorder(),
+                        //       labelText: 'Nama Bersangkutan',
+                        //     ),
+                        //   ),
+                        // ),
 
 
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 16),
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Form ini wajib diisi, apabila lupa maka dapat menekan tombol di pojok kiri atas';
-                              }
-                              return null;
-                            },
-                            controller: _nikController,
-                            textInputAction: TextInputAction.next,
-                            // autofocus: true,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'NIK',
-                            ),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                        //   child: TextFormField(
+                        //     validator: (value) {
+                        //       if (value == null || value.isEmpty) {
+                        //         return 'Form ini wajib diisi, apabila lupa maka dapat menekan tombol di pojok kiri atas';
+                        //       }
+                        //       return null;
+                        //     },
+                        //     controller: _nikController,
+                        //     textInputAction: TextInputAction.next,
+                        //     // autofocus: true,
+                        //     decoration: const InputDecoration(
+                        //       border: UnderlineInputBorder(),
+                        //       labelText: 'NIK',
+                        //     ),
+                        //   ),
+                        // ),
 
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -437,6 +520,10 @@ class _RequestCutiState extends State<RequestCuti> {
                             },
                             controller: _jumlahhariController,
                             textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.number,
+                            onChanged: (String hariii){
+                              tanggalOtomatis(_tanggalController.text, harii: hariii);
+                            },
                             // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
@@ -749,7 +836,7 @@ class _RequestCutiState extends State<RequestCuti> {
                               )),
                         ),
 
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -793,17 +880,19 @@ class _RequestCutiState extends State<RequestCuti> {
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         if(kIsWeb){
-                                          await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}")
+                                          if (fileBytes != null) {
+                                            lampiran = true;
+                                            await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}")
                                               .putData(fileBytes!);
-                                          // storage
-                                          //     .uploadFile(pathWeb!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
-                                          // //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
-                                          //     .then((value) => print('Done'));
+                                          }
                                         } else {
-                                          storage
+                                          if (path != null) {
+                                            lampiran = true;
+                                            storage
                                               .uploadFile(path!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
                                           //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
                                               .then((value) => print('Done'));
+                                          }
                                         }
                                         _onDone();
                                         FirebaseFirestore.instance
@@ -866,9 +955,14 @@ class _RequestCutiState extends State<RequestCuti> {
     required DateTime tanggal,
     required DateTime tanggal2,
     required String? secdept,
-    required String? periksa}) async {
+    required String? periksa,
+    required bool adaFile}) async {
     final cutii = FirebaseFirestore.instance.collection('cuti');
     var inputTime = DateTime.now();
+    // String alamaaat = kIsWeb ? "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}" : "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}";
+    // String buktiiii = kIsWeb ? await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}").getDownloadURL() : await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}").getDownloadURL();
+
+
     final json = <String, dynamic>{
       'idtime': inputTime,
       'nama_pengaju': name_pengaju,
@@ -887,8 +981,11 @@ class _RequestCutiState extends State<RequestCuti> {
       'dinas luar' : dinasluar,
       'status' : 'proses',
       'email' : '${FirebaseAuth.instance.currentUser!.email}',
-      'alamatfile' : kIsWeb ? "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}" : "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}",
-      'bukti' : kIsWeb ? await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}").getDownloadURL() : await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}").getDownloadURL(),
+      'alamatfile' : adaFile ? kIsWeb ? "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}" : "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}"
+        : "",
+      'bukti' : adaFile ?  kIsWeb ? await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}").getDownloadURL() : await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}").getDownloadURL()
+        : "",
+      'captanggal' : DateTime.now().toString()
 
     };
     await cutii.add(json);
@@ -917,6 +1014,24 @@ class _RequestCutiState extends State<RequestCuti> {
           ),
         )
     ));
+  }
+
+  void tanggalOtomatis(String dateTimeee,
+      {String harii = "1"}) {
+    DateTime tanggalBaru = DateFormat('EEE, MMM dd, yyyy').parse(dateTimeee);
+    if (harii != ""){
+      var x = int.parse(harii);
+      while (x > 1){
+        do {
+          tanggalBaru = tanggalBaru.add(Duration(days: 1));
+        } while (tanggalBaru.weekday == DateTime.saturday || tanggalBaru.weekday == DateTime.sunday);
+        x--;
+      }
+      _tanggal2Controller.text = DateFormat.yMMMEd().format(tanggalBaru);
+    } else {
+      _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
+    }
+    // harii != ''  ? _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now().add(Duration(days: int.parse(harii)))) : _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
   }
 
 }

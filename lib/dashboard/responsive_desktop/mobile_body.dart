@@ -44,7 +44,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                 MaterialPageRoute(builder: (context) => const ChangePassword()),
               );
             },
-            icon: const Icon(Icons.person_outline_outlined, color: Colors.black)),
+            icon: const Icon(Icons.lock, color: Colors.black)),
         backgroundColor: const Color(0xFFF1f1f1),
         title: const Text(
           'User Profile',
@@ -385,23 +385,6 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ),
               title: Text("Progress"),
               subtitle: Text("Menu untuk melihat progress pengajuan cuti"),
-              trailing: Icon(Icons.history),
-            ),
-          ),
-          GestureDetector(
-            onTap: (){
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UjiCoba())
-              );
-            },
-            child: const ListTile(
-              leading: SizedBox(
-                width: 50,
-                height: 50,
-              ),
-              title: Text("Uji Coba"),
-              subtitle: Text("Menu Ini Untuk Uji Coba Fitur baru"),
               trailing: Icon(Icons.history),
             ),
           ),

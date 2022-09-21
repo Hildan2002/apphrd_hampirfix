@@ -165,25 +165,28 @@ class _RequestOvertimeState extends State<RequestOvertime> {
               fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
                   FocusNode focusNode,
                   VoidCallback onFieldSubmitted) {
-                return TextFormField(
-                    autofocus: true,
-                    validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Form ini wajib diisi';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Nama'
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: TextFormField(
+                      autofocus: true,
+                      validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Form ini wajib diisi';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Nama'
 
+                    ),
+                    controller: texteditingcontroller,
+                    focusNode: focusNode,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (String selection) {
+                      nameController.text = texteditingcontroller.text;
+                    },
                   ),
-                  controller: texteditingcontroller,
-                  focusNode: focusNode,
-                  textInputAction: TextInputAction.next,
-                  onFieldSubmitted: (String selection) {
-                    nameController.text = texteditingcontroller.text;
-                  },
                 );
               },
               optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
@@ -197,6 +200,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                                 return GestureDetector(
                                     onTap: () {
                                       onSelected(opt);
+                                      nameController.text = opt;
                                       nikController.text = nik[nama.indexOf(opt)];
                                     },
                                     child: Container(
@@ -257,24 +261,95 @@ class _RequestOvertimeState extends State<RequestOvertime> {
 
           // SizedBox(height: 5),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Form ini wajib diisi';
+          RawAutocomplete(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<String>.empty();
                 }
-                return null;
+                return kerjaan.where((String option) {
+                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                });
               },
-              textInputAction: TextInputAction.next,
-              controller: jobController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Pekerjaan',
-              ),
-            ),
-          ),
+
+              fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+                  FocusNode focusNode,
+                  VoidCallback onFieldSubmitted) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: TextFormField(
+                    autofocus: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Form ini wajib diisi';
+                      }
+                      return null;
+                    },
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Pekerjaan',
+                          ),
+                    controller: texteditingcontroller,
+                    focusNode: focusNode,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (String selection) {
+                      jobController.text = texteditingcontroller.text;
+                    },
+                    onChanged: (String value){
+                      jobController.text = texteditingcontroller.text;
+                    },
+                  ),
+                );
+              },
+              optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+                  Iterable<String> options) {
+                return Material(
+                    child: SizedBox(
+                        height: 200,
+                        child: SingleChildScrollView(
+                            child: Column(
+                              children: options.map((opt) {
+                                return GestureDetector(
+                                    onTap: () {
+                                      onSelected(opt);
+                                      jobController.text = opt;
+                                      // nikController.text = nik[nama.indexOf(opt)];
+                                    },
+                                    child: Container(
+                                        padding: const EdgeInsets.only(right: 60),
+                                        child: Card(
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(10),
+                                              child: Text(opt),
+                                            )
+                                        )
+                                    )
+                                );
+                              }).toList(),
+                            )
+                        )
+                    )
+                );
+              }),
+
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          //   child: TextFormField(
+          //     validator: (value) {
+          //       if (value == null || value.isEmpty) {
+          //         return 'Form ini wajib diisi';
+          //       }
+          //       return null;
+          //     },
+          //     textInputAction: TextInputAction.next,
+          //     controller: jobController,
+          //     autofocus: true,
+          //     decoration: const InputDecoration(
+          //       border: UnderlineInputBorder(),
+          //       labelText: 'Pekerjaan',
+          //     ),
+          //   ),
+          // ),
 
           // SizedBox(height: 5),
           Padding(
