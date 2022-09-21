@@ -528,7 +528,7 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
                               title: Text('Berhasil'),
                               description: Text('Anda Berhasil mengirim request overtime'),
                               notificationPosition: NotificationPosition.top,
-                              dismissible: true,
+                              // dismissible: true,
                             ).show(context);
                           }
                       ),

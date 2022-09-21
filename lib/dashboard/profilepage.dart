@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -36,60 +35,47 @@ class _ChangePasswordState extends State<ChangePassword> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 150),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: _PasswordlamaController,
-                  textInputAction: TextInputAction.next,
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Password Lama',
+          const SizedBox(height: 100),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 16),
+                  child: TextFormField(
+                    controller: _PasswordlamaController,
+                    textInputAction: TextInputAction.next,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Password Lama',
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: _PasswordbaruController,
-                  textInputAction: TextInputAction.next,
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Password Baru',
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 16),
+                  child: TextFormField(
+                    controller: _PasswordbaruController,
+                    textInputAction: TextInputAction.next,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Password Baru',
+                    ),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(EmailAuthProvider.credential(email: FirebaseAuth.instance.currentUser!.email.toString(), password: _PasswordlamaController.text))
-                        .then((value){
-                      FirebaseAuth.instance.currentUser!.updatePassword(_PasswordbaruController.text);
-                      FirebaseAuth.instance.signOut();
-                    });
+                ElevatedButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(EmailAuthProvider.credential(email: FirebaseAuth.instance.currentUser!.email.toString(), password: _PasswordlamaController.text))
+                          .then((value){
+                        FirebaseAuth.instance.currentUser!.updatePassword(_PasswordbaruController.text);
+                        FirebaseAuth.instance.signOut();
+                      });
 
-                  },
-                  child: Text('Change Password'))
-            ],
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(bottom: context.mediaQueryPadding.bottom),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'v.1.0 beta',
-                    style: TextStyle(color: Colors.black54),
-                  ),
-
-                ],
-              ),
+                    },
+                    child: Text('Change Password'))
+              ],
             ),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:aplikasi_hrd/main.dart';
+import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:http/http.dart' as http;
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
@@ -151,24 +152,89 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           Text('Karyawan ${cards.length + 1}'),
           const SizedBox(height: 20),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Form ini wajib diisi';
+          RawAutocomplete(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<String>.empty();
                 }
-                return null;
+                return nama.where((String option) {
+                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                });
               },
-              textInputAction: TextInputAction.next,
-              controller: nameController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Nama',
-              ),
-            ),
-          ),
+
+              fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+                  FocusNode focusNode,
+                  VoidCallback onFieldSubmitted) {
+                return TextFormField(
+                    autofocus: true,
+                    validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Form ini wajib diisi';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Nama'
+
+                  ),
+                  controller: texteditingcontroller,
+                  focusNode: focusNode,
+                  textInputAction: TextInputAction.next,
+                  onFieldSubmitted: (String selection) {
+                    nameController.text = texteditingcontroller.text;
+                  },
+                );
+              },
+              optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+                  Iterable<String> options) {
+                return Material(
+                    child: SizedBox(
+                        height: 200,
+                        child: SingleChildScrollView(
+                            child: Column(
+                              children: options.map((opt) {
+                                return GestureDetector(
+                                    onTap: () {
+                                      onSelected(opt);
+                                      nikController.text = nik[nama.indexOf(opt)];
+                                    },
+                                    child: Container(
+                                        padding: const EdgeInsets.only(right: 60),
+                                        child: Card(
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(10),
+                                              child: Text(opt),
+                                            )
+                                        )
+                                    )
+                                );
+                              }).toList(),
+                            )
+                        )
+                    )
+                );
+              }),
+
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          //   child: TextFormField(
+          //     validator: (value) {
+          //       if (value == null || value.isEmpty) {
+          //         return 'Form ini wajib diisi';
+          //       }
+          //       return null;
+          //     },
+          //     textInputAction: TextInputAction.next,
+          //     controller: nameController,
+          //     autofocus: true,
+          //     decoration: const InputDecoration(
+          //       border: UnderlineInputBorder(),
+          //       labelText: 'Nama',
+          //     ),
+          //   ),
+          // ),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -385,205 +451,208 @@ class _RequestOvertimeState extends State<RequestOvertime> {
               ],
             ),
           ),
-          body: TabBarView(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Form ini wajib diisi';
-                          }
-                          return null;
-                        },
-                        controller: _tjController,
-                        textInputAction: TextInputAction.next,
-                        autofocus: true,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'Nama Penanggung Jawab',
+          body: Form(
+            key: _formKey,
+            child: TabBarView(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Form ini wajib diisi';
+                            }
+                            return null;
+                          },
+                          controller: _tjController,
+                          textInputAction: TextInputAction.next,
+                          autofocus: true,
+                          decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: 'Nama Penanggung Jawab',
+                          ),
                         ),
                       ),
-                    ),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: DropdownButtonFormField(
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Form ini wajib dipilih';
-                          }
-                          return null;
-                        },
-                        value: _butonSelected1,
-                        hint: const Text('Pilih Department'),
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            setState(() {
-                              _butonSelected1 = newValue;
-                            });
-                          }
-                        }, items: _dropDownMenuItems,
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16),
-                      child: DropdownButtonFormField(
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Form ini wajib dipilih';
-                          }
-                          return null;
-                        },
-                        value: _butonSelected2,
-                        hint: const Text('Pilih Shift'),
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            setState(() {
-                              _butonSelected2 = newValue;
-                            });
-                          }
-                        }, items: _dropDownMenuItems2,
-                      ),
-                    ),
-
-                    // ListTile(
-                    //   title: const Text('Pilih Department :'),
-                    //   trailing: DropdownButton(
-                    //     value: _butonSelected1,
-                    //     hint: const Text('pilih'),
-                    //     onChanged: (String? newValue) {
-                    //       if (newValue != null) {
-                    //         setState(() {
-                    //           _butonSelected1 = newValue;
-                    //         });
-                    //       }
-                    //     }, items: _dropDownMenuItems,
-                    //   ),
-                    // ),
-
-                    // ListTile(
-                    //   title: const Text('Pilih Shift :'),
-                    //   trailing: DropdownButton(
-                    //     value: _butonSelected2,
-                    //     hint: const Text('pilih'),
-                    //     onChanged: (String? newValue) {
-                    //       if (newValue != null) {
-                    //         setState(() {
-                    //           _butonSelected2 = newValue;
-                    //         });
-                    //       }
-                    //     }, items: _dropDownMenuItems2,
-                    //   ),
-                    // ),
-
-                    const SizedBox(height: 10),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        const Text(
-                          'Choose Date',
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: DropdownButtonFormField(
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Form ini wajib dipilih';
+                            }
+                            return null;
+                          },
+                          value: _butonSelected1,
+                          hint: const Text('Pilih Department'),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _butonSelected1 = newValue;
+                              });
+                            }
+                          }, items: _dropDownMenuItems,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: InkWell(
-                            onTap: () {
-                              _selectDate(context);
-                            },
-                            child: Container(
-                              width: 250,
-                              height: 50,
-                              margin: const EdgeInsets.only(top: 2),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),),
-                              child: TextFormField(
-                                style: const TextStyle(fontSize: 20),
-                                textAlign: TextAlign.center,
-                                enabled: false,
-                                keyboardType: TextInputType.text,
-                                controller: _tanggalController,
-                                decoration: const InputDecoration(
-                                    disabledBorder:
-                                    UnderlineInputBorder(borderSide: BorderSide
-                                        .none),
-                                    // labelText: 'Time',
-                                    contentPadding: EdgeInsets.only(top: 0.0)),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
+                        child: DropdownButtonFormField(
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Form ini wajib dipilih';
+                            }
+                            return null;
+                          },
+                          value: _butonSelected2,
+                          hint: const Text('Pilih Shift'),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _butonSelected2 = newValue;
+                              });
+                            }
+                          }, items: _dropDownMenuItems2,
+                        ),
+                      ),
+
+                      // ListTile(
+                      //   title: const Text('Pilih Department :'),
+                      //   trailing: DropdownButton(
+                      //     value: _butonSelected1,
+                      //     hint: const Text('pilih'),
+                      //     onChanged: (String? newValue) {
+                      //       if (newValue != null) {
+                      //         setState(() {
+                      //           _butonSelected1 = newValue;
+                      //         });
+                      //       }
+                      //     }, items: _dropDownMenuItems,
+                      //   ),
+                      // ),
+                      //
+                      // ListTile(
+                      //   title: const Text('Pilih Shift :'),
+                      //   trailing: DropdownButton(
+                      //     value: _butonSelected2,
+                      //     hint: const Text('pilih'),
+                      //     onChanged: (String? newValue) {
+                      //       if (newValue != null) {
+                      //         setState(() {
+                      //           _butonSelected2 = newValue;
+                      //         });
+                      //       }
+                      //     }, items: _dropDownMenuItems2,
+                      //   ),
+                      // ),
+
+                      const SizedBox(height: 10),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          const Text(
+                            'Choose Date',
+                            style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: InkWell(
+                              onTap: () {
+                                _selectDate(context);
+                              },
+                              child: Container(
+                                width: 250,
+                                height: 50,
+                                margin: const EdgeInsets.only(top: 2),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  border: Border.all(color: Colors.grey),),
+                                child: TextFormField(
+                                  style: const TextStyle(fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                  enabled: false,
+                                  keyboardType: TextInputType.text,
+                                  controller: _tanggalController,
+                                  decoration: const InputDecoration(
+                                      disabledBorder:
+                                      UnderlineInputBorder(borderSide: BorderSide
+                                          .none),
+                                      // labelText: 'Time',
+                                      contentPadding: EdgeInsets.only(top: 0.0)),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
 
-                ),
-           Column(
-             children: [
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                 children: [
-                 ElevatedButton(
-                   child: const Text('Tambah Peserta'),
-                   onPressed: () => setState(() => cards.add(createCard()))),
-                 ElevatedButton(
-                   child: const Text('Kurangi Peserta'),
-                   onPressed: () => setState(() => cards.removeLast())),
+                  ),
+             Column(
+               children: [
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                   children: [
                    ElevatedButton(
-                   child: const Text('Send'),
-                   onPressed: () {
-                     if (_formKey.currentState!.validate()) {
-                       _onDone();
-                       FirebaseFirestore.instance
-                           .collection("users")
-                           .where("email", isEqualTo: periksa)
-                           .get().then(
-                               (QuerySnapshot snapshot) => {
-                             if(snapshot.docs.isNotEmpty){
-                               sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
-                               debugPrint((snapshot.docs.first.data() as Map)["tokens"])
-                             }
-                           });
-                     }
+                     child: const Text('Tambah Peserta'),
+                     onPressed: () => setState(() => cards.add(createCard()))),
+                   ElevatedButton(
+                     child: const Text('Kurangi Peserta'),
+                     onPressed: () => setState(() => cards.removeLast())),
+                     ElevatedButton(
+                     child: const Text('Send'),
+                     onPressed: () {
+                       if (_formKey.currentState!.validate()) {
+                         _onDone();
+                         FirebaseFirestore.instance
+                             .collection("users")
+                             .where("email", isEqualTo: periksa)
+                             .get().then(
+                                 (QuerySnapshot snapshot) => {
+                               if(snapshot.docs.isNotEmpty){
+                                 sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
+                                 debugPrint((snapshot.docs.first.data() as Map)["tokens"])
+                               }
+                             });
+                       }
 
 
-                     ElegantNotification.success(
-                        title: const Text('Berhasil'),
-                        description: const Text('Anda Berhasil mengirim request overtime'),
-                        notificationPosition: NotificationPosition.top,
-                        dismissible: true,
-                       ).show(context);
-                     }
+                       ElegantNotification.success(
+                          title: const Text('Berhasil'),
+                          description: const Text('Anda Berhasil mengirim request overtime'),
+                          notificationPosition: NotificationPosition.top,
+                          // dismissible: true,
+                         ).show(context);
+                       }
 
-                   ),
+                     ),
+                 ],
+                 ),
+                 Expanded(
+                   child: ListView.builder(
+                    itemCount: cards.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return cards[index];
+                    },
+            ),
+                 ),
+
                ],
-               ),
-               Expanded(
-                 child: ListView.builder(
-                  itemCount: cards.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return cards[index];
-                  },
-          ),
-               ),
-
-             ],
-           ),
-              ]
+             ),
+                ]
+            ),
           ),
         )
     );
@@ -646,4 +715,30 @@ class Employee {
     'jamawal':jamawal,
     'jamkhir':jamkhir,
   };
+}
+
+class AutocompleteBasicExample extends StatelessWidget {
+  const AutocompleteBasicExample({super.key});
+
+  static const List<String> _kOptions = <String>[
+    'aardvark paling cool',
+    'bobcat',
+    'chameleon',
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Autocomplete<String>(
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text == '') {
+          return const Iterable<String>.empty();
+        }
+        return _kOptions.where((String option) {
+          return option.contains(textEditingValue.text.toLowerCase());
+        });
+      },
+      onSelected: (String selection) {
+        debugPrint('You just selected $selection');
+      },
+    );
+  }
 }

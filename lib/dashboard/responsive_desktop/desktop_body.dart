@@ -77,24 +77,25 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   //     ),
                   //   ),
                   // ),
-                  // InkWell(
-                  //   onTap: (){
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(builder: (context) => const UjiCoba())
-                  //     );
-                  //   },
-                  //   child: Padding(
-                  //     padding: tilePadding,
-                  //     child: ListTile(
-                  //       leading: const Icon(Icons.person_outlined),
-                  //       title: Text(
-                  //         'Upload',
-                  //         style: drawerTextColor,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const UjiCoba())
+                      );
+                    },
+                    child: Padding(
+                      padding: tilePadding,
+                      child: ListTile(
+                        leading: const Icon(Icons.person_outlined),
+                        title: Text(
+                          'Halaman lain',
+                          style: drawerTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+
                   InkWell(
                     onTap: (){
                       Navigator.push(
@@ -270,7 +271,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                     title: const Text('Forbidden'),
                                     description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
                                     notificationPosition: NotificationPosition.top,
-                                    dismissible: true,
+                                    // dismissible: true,
                                   ).show(context);
                                 },
                                 child: const CardFolderDesktop(
@@ -446,8 +447,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                             return Text(
                                               "Ada Permintaan Cuti ${streamSnapshot.data?.docs.length}",
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: const Color(0xFF22215B).withOpacity(0.6),
+                                              style: const TextStyle(
+                                                color: Color(0xFF22215B),
                                                 fontSize: 16,
                                               ),
                                             );
@@ -468,8 +469,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                             return Text(
                                               "Ada permintaan Inventaris ${streamSnapshot.data?.docs.length}",
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: const Color(0xFF22215B).withOpacity(0.6),
+                                              style: const TextStyle(
+                                                color: Color(0xFF22215B),
                                                 fontSize: 16,
                                               ),
                                             );

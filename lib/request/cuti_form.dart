@@ -12,7 +12,6 @@ import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:backdrop/backdrop.dart';
@@ -270,7 +269,7 @@ class _RequestCutiState extends State<RequestCuti> {
         periksa = 'samsu@0012.nsi';
         break;
       case 'PPIC' :
-        periksa = 'cecep@0123.nsi';
+        periksa = 'cep@0178.nsi';
         break;
       case 'ACCOUNTING' :
         periksa = 'harlan@0693.nsi';
@@ -316,7 +315,14 @@ class _RequestCutiState extends State<RequestCuti> {
 
   }
 
-  String? path;
+  String? path, pathWeb, filenamec;
+  Uint8List? fileBytes;
+
+  static const List<String> _kOptions = <String>[
+    'aardvark',
+    'bobcat',
+    'chameleon',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -342,8 +348,25 @@ class _RequestCutiState extends State<RequestCuti> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                          child: Autocomplete<String>(
+                            optionsBuilder: (TextEditingValue textEditingValue) {
+                          if (textEditingValue.text == '') {
+                          return const Iterable<String>.empty();
+                          }
+                          return _kOptions.where((String option) {
+
+                          return option.contains(textEditingValue.text.toLowerCase());
+
+                          });
+                          },
+                            onSelected: (String selection) {
+                              debugPrint('You just selected $selection');
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                           child: TextFormField(
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -646,7 +669,7 @@ class _RequestCutiState extends State<RequestCuti> {
                             ),
                           ],
                         ),
-                        Container(
+                        SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -654,13 +677,15 @@ class _RequestCutiState extends State<RequestCuti> {
                             children: [
                               _pickerImage != null
                                   ? GestureDetector(
-                                onTap: (){fullSizeNih(context);},
-                                child: Hero(
-                                  tag: "nihBuktiNih",
-                                  child: SizedBox(
-                                      height: 100,
-                                      width: 100,
-                                      child: Image.file(_pickerImage!, fit: BoxFit.cover,)
+                                    onTap: (){
+                                      fullSizeNih(context);
+                                      },
+                                    child: Hero(
+                                      tag: "nihBuktiNih",
+                                      child: SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: kIsWeb?Image.file(_pickerImage!, fit: BoxFit.cover,): Image.file(_pickerImage!, fit: BoxFit.cover,)
                                   ),
                                 ),
                               )
@@ -677,7 +702,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 final result = await FilePicker.platform.pickFiles(
                                   allowMultiple: false,
                                   type: FileType.custom,
-                                  allowedExtensions: ['png', 'jpg', 'jpeg'],
+                                  allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf'],
                                 );
 
                                 if (result == null){
@@ -688,10 +713,24 @@ class _RequestCutiState extends State<RequestCuti> {
                                   );
                                   return;
                                 } else {
-                                  path = result.files.single.path;
-                                  setState(() {
-                                    _pickerImage = File((result.files.single.path)!);
-                                  });
+                                  if(kIsWeb){
+                                    fileBytes = result.files.first.bytes;
+                                    filenamec = result.files.first.name;
+                                    pathWeb = File.fromRawPath(fileBytes!).path;
+
+                                    debugPrint(filenamec);
+
+                                    // await FirebaseStorage.instance.ref("cuti/$filename").putData(fileBytes);
+                                    setState((){
+                                      _pickerImage = File.fromRawPath(fileBytes!);
+                                    });
+                                    // _pickerImage = File.fromRawPath(fileBytes);
+                                  } else {
+                                    path = result.files.single.path;
+                                    setState(() {
+                                      _pickerImage = File((result.files.single.path)!);
+                                    });
+                                  }
                                 }
                                 // try{
                                 //   getImage();
@@ -753,10 +792,19 @@ class _RequestCutiState extends State<RequestCuti> {
                                     child: const Text('Kirim'),
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        storage
-                                            .uploadFile(path!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
-                                            //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
-                                            .then((value) => print('Done'));
+                                        if(kIsWeb){
+                                          await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}")
+                                              .putData(fileBytes!);
+                                          // storage
+                                          //     .uploadFile(pathWeb!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
+                                          // //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
+                                          //     .then((value) => print('Done'));
+                                        } else {
+                                          storage
+                                              .uploadFile(path!, FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf(".")))
+                                          //baca dari url: "gs://apphrd.appspot.com/cuti/"+FirebaseAuth.instance.currentUser!.uid.toString()
+                                              .then((value) => print('Done'));
+                                        }
                                         _onDone();
                                         FirebaseFirestore.instance
                                             .collection("users")
@@ -773,7 +821,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                           title: const Text('Berhasil'),
                                           description: const Text('Anda Berhasil mengirim request cuti'),
                                           notificationPosition: NotificationPosition.top,
-                                          dismissible: true,
+                                          // dismissible: true,
                                         ).show(context);
                                       }
                                     }
@@ -839,7 +887,8 @@ class _RequestCutiState extends State<RequestCuti> {
       'dinas luar' : dinasluar,
       'status' : 'proses',
       'email' : '${FirebaseAuth.instance.currentUser!.email}',
-      'bukti' : await FirebaseStorage.instance.ref().child('cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}').getDownloadURL(),
+      'alamatfile' : kIsWeb ? "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}" : "cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}",
+      'bukti' : kIsWeb ? await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}${filenamec!.substring(filenamec!.indexOf("."))}").getDownloadURL() : await FirebaseStorage.instance.ref().child("cuti/${FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf("."))}").getDownloadURL(),
 
     };
     await cutii.add(json);
@@ -855,10 +904,14 @@ class _RequestCutiState extends State<RequestCuti> {
         Scaffold(
           body: Center(
             child: GestureDetector(
-              onTap: (){Navigator.pop(context);},
+              onTap: (){
+                Navigator.pop(context);
+                },
               child: Hero(
                 tag: "nihBuktiNih",
-                child: Image.file(_pickerImage!),
+                child: kIsWeb?Image.memory(
+                  _pickerImage!.readAsBytesSync(),):Image.file(_pickerImage!),
+
               ),
             ),
           ),

@@ -3,13 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import 'cuti_form.dart';
+// import 'cuti_form.dart';
 
 
 class Cutidetail extends StatefulWidget {
@@ -54,7 +59,7 @@ class _CutidetailState extends State<Cutidetail> {
 
   @override
   Widget build(BuildContext context) {
-    final Storage storage = Storage();
+    // final Storage storage = Storage();
 
     String? periksa2;
 
@@ -330,9 +335,40 @@ class _CutidetailState extends State<Cutidetail> {
                                            child: SizedBox(
                                             height: 100,
                                             width: 100,
-                                            child: Image.network(documentSnapshot['bukti'], fit: BoxFit.cover,)
+                                            child: Image.network(
+                                              documentSnapshot['bukti'],
+                                              fit: BoxFit.cover,
+                                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                } return const Center(
+                                                  child: CircularProgressIndicator(),
+                                                );
+                                              },
+                                            )
                                         ),
                                       ),
+                                    ),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16.0),
+                                          ),
+                                        ),
+                                        onPressed: ()  async {
+                                          Uri url = Uri.parse(documentSnapshot['bukti']);
+                                          if (await canLaunchUrl(url)) {
+                                          await launchUrl(url);
+                                          } else {
+                                          throw 'Could not launch $url';
+                                          }
+                                        },
+                                        child:Text(
+                                          "Unduh File",
+                                          style: Theme.of(context).textTheme.button!.copyWith(
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                          ),
+                                        )
                                     ),
                                   ],
                                 ),
@@ -371,7 +407,7 @@ class _CutidetailState extends State<Cutidetail> {
                                                         title: Text('Berhasil'),
                                                         description: Text('Anda Berhasil menolak request cuti'),
                                                         notificationPosition: NotificationPosition.top,
-                                                        dismissible: true,
+                                                        // dismissible: true,
                                                       ).show(context);
                                                     },
                                                     child: const Text('OK'),
@@ -413,7 +449,7 @@ class _CutidetailState extends State<Cutidetail> {
                                                       title: Text('Berhasil'),
                                                       description: Text('Anda Berhasil menyetujui request cuti'),
                                                       notificationPosition: NotificationPosition.top,
-                                                      dismissible: true,
+                                                      // dismissible: true,
                                                     ).show(context);
                                                   },
                                                   child: const Text('OK'),
@@ -454,6 +490,43 @@ class _CutidetailState extends State<Cutidetail> {
     return a;
   }
 
+  Future<void> downloadFile(String link) async {
+    await FlutterDownloader.enqueue(
+      url: link,
+      showNotification: true,
+      openFileFromNotification: true,
+      savedDir: '/storage/emulated/0/Download/'
+    );
+    // final Directory appDocDir = await getApplicationDocumentsDirectory();
+    // final String appDocPath = appDocDir.path;
+    // final File tempFile = File(appDocPath);
+    // try {
+    //   await FirebaseStorage.instance
+    //       .ref('cuti/alvin@0891.jpg').writeToFile(tempFile);
+    //   await tempFile.create();
+    //   await OpenFile.open(tempFile.path);
+    // } on FirebaseException {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(
+    //         'Error, file tidak bisa diunduh',
+    //         style: Theme.of(context).textTheme.bodyText1,
+    //       ),
+    //     ),
+    //   );
+    // }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content:Text(
+            'File Berhasil diunduh',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).primaryColorLight,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0))),
+    );
+  }
   // void fullSizeNih(BuildContext context) {
   //     Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>
   //         Scaffold(

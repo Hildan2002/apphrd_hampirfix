@@ -63,15 +63,16 @@ class _ExportExelState extends State<ExportExel> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-          appBar: AppBar(
-            title: Text('Menu Export Data'),
-            centerTitle: true,
-            bottom: const TabBar(
-              indicatorColor: Colors.lime,
-              indicatorWeight: 5.0,
-              labelColor: Colors.white,
-              labelPadding: EdgeInsets.only(top: 10.0),
-              unselectedLabelColor: Colors.grey,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Text('Menu Export Data'),
+          centerTitle: true,
+          bottom: const TabBar(
+            indicatorColor: Colors.lime,
+            indicatorWeight: 5.0,
+            labelColor: Colors.white,
+            labelPadding: EdgeInsets.only(top: 10.0),
+            unselectedLabelColor: Colors.grey,
               tabs: [
                 Tab(
                   text: 'Overtime',

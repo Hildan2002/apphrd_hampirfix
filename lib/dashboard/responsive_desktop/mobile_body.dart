@@ -3,6 +3,7 @@ import 'package:aplikasi_hrd/request/cuti_form.dart';
 import 'package:aplikasi_hrd/request/cuti_qusus.dart';
 import 'package:aplikasi_hrd/request/export_excel.dart';
 import 'package:aplikasi_hrd/request/history.dart';
+import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,7 +32,6 @@ class _MobileScaffoldState extends State<MobileScaffold> {
 
     final Stream<QuerySnapshot> notif = FirebaseFirestore.instance.collection('overtime').where('stepid', isEqualTo: user.email).snapshots();
     final Stream<QuerySnapshot> notif1 = FirebaseFirestore.instance.collection('cuti').where('stepid', isEqualTo: user.email).snapshots();
-    // final Stream<QuerySnapshot> _notif2 = FirebaseFirestore.instance.collection('inventaris').where('stepid', isEqualTo: user.email).snapshots();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1f1f1),
@@ -149,8 +149,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                   return Text(
                                     "Ada Permintaan Cuti ${streamSnapshot.data?.docs.length}",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: const Color(0xFF22215B).withOpacity(0.6),
+                                    style: const TextStyle(
+                                      color: Color(0xFF22215B),
                                       fontSize: 16,
                                     ),
                                   );
@@ -337,7 +337,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                               title: const Text('Forbidden'),
                               description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
                               notificationPosition: NotificationPosition.top,
-                              dismissible: true,
+                              // dismissible: true,
                             ).show(context);
                           },
                           child: const CardFolder(
@@ -371,7 +371,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
             ),
           ),
           const SizedBox(height: 10),
-          InkWell(
+          GestureDetector(
             onTap: (){
               Navigator.push(
                   context,
@@ -385,6 +385,23 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               ),
               title: Text("Progress"),
               subtitle: Text("Menu untuk melihat progress pengajuan cuti"),
+              trailing: Icon(Icons.history),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UjiCoba())
+              );
+            },
+            child: const ListTile(
+              leading: SizedBox(
+                width: 50,
+                height: 50,
+              ),
+              title: Text("Uji Coba"),
+              subtitle: Text("Menu Ini Untuk Uji Coba Fitur baru"),
               trailing: Icon(Icons.history),
             ),
           ),

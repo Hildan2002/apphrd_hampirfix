@@ -294,7 +294,7 @@ class Overtimeinside extends StatelessWidget {
                                                         title: Text('Berhasil'),
                                                         description: Text('Anda Berhasil menolak request overtime'),
                                                         notificationPosition: NotificationPosition.top,
-                                                        dismissible: true,
+                                                        // dismissible: true,
                                                       ).show(context);
                                                     },
                                                     child: const Text('OK'),
@@ -357,7 +357,7 @@ class Overtimeinside extends StatelessWidget {
                                                         title: Text('Berhasil'),
                                                         description: Text('Anda Berhasil menyetujui request overtime'),
                                                         notificationPosition: NotificationPosition.top,
-                                                        dismissible: true,
+                                                        // dismissible: true,
                                                       ).show(context);
                                                     },
                                                     child: const Text('OK'),

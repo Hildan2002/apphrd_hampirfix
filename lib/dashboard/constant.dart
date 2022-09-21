@@ -4,7 +4,7 @@ var defaultBackgroundColor = Colors.grey[300];
 var appBarColor = Colors.grey[900];
 var myAppBar = AppBar(
   backgroundColor: appBarColor,
-  title: Text(' '),
+  title: const Text(' '),
   centerTitle: false,
 );
 var drawerTextColor = TextStyle(

@@ -28,7 +28,6 @@ class DashboardFilter extends StatefulWidget {
 }
 
 class _DashboardFilterState extends State<DashboardFilter> {
-  String? _token;
 
   Future<void> setupToken() async {
     // Get the token each time the application loads
