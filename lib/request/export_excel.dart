@@ -1,10 +1,13 @@
 // import 'dart:ffi';
 // import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 import 'package:excel/excel.dart';
+import 'package:jiffy/jiffy.dart';
 
 
 
@@ -31,7 +34,7 @@ class _ExportExelState extends State<ExportExel> {
 
   // TimeOfDay time = TimeOfDay(hour: 10, minute: 30);
 
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
@@ -57,8 +60,9 @@ class _ExportExelState extends State<ExportExel> {
         // .orderBy('shift', descending: false)
         .snapshots();
     final Stream<QuerySnapshot> _exportC = FirebaseFirestore.instance.collection('cuti')
-        .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
+        // .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('stepid', isEqualTo: 'Approve@')
+        .orderBy('idtime')
         .snapshots();
     return DefaultTabController(
       length: 2,
@@ -104,7 +108,7 @@ class _ExportExelState extends State<ExportExel> {
                     children: [
                       Column(
                         children: [
-                          Text(
+                          const Text(
                             'Choose Date',
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
@@ -131,7 +135,7 @@ class _ExportExelState extends State<ExportExel> {
                                   enabled: false,
                                   keyboardType: TextInputType.text,
                                   controller: _tanggalController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       disabledBorder:
                                       UnderlineInputBorder(borderSide: BorderSide.none),
                                       // labelText: 'Time',
@@ -141,15 +145,13 @@ class _ExportExelState extends State<ExportExel> {
                             ),
                           ),
 
-
-
                         ],
                       ),
 
                       StreamBuilder<QuerySnapshot>(
                           stream: _export,
                           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                            return SizedBox(
+                            return kIsWeb ? SizedBox(
                               width: 180,
                               height: 60,
                               child: Container(
@@ -157,92 +159,143 @@ class _ExportExelState extends State<ExportExel> {
                                   color: Colors.grey[200],
                                   border: Border.all(color: Colors.grey),),
                                 child: ElevatedButton(onPressed: () {
-                                  _onExport() async {
-                                    var excel = Excel.createExcel();
-                                    Sheet sheet = excel['Sheet1'];
-                                    // for (int i = 0; i < streamSnapshot.data!.docs.length; i++) {
-                                    var semuaDokumen = streamSnapshot.data!.docs;
-                                    var rows = 0, koloms = 0;
-                                    var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                    Map<String, int> header = {
-                                      "ID": 0,
-                                      "Date": 1,
-                                      "New Working Shift": 2,
-                                      "SPL On Date":3,
-                                      "SPL On Time":4,
-                                      "SPL On Break Duration":5,
-                                      "SPL Off Date":6,
-                                      "SPL Off Time":7,
-                                    };
-                                    header.forEach((key, value) {
-                                      cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                      cell.value = key;
-                                      koloms = koloms + 1;
-                                    });
-                                    // cell.value = _tanggalController.text;
-                                    semuaDokumen.forEach((element) {
-                                      // debugPrint(element['tanggal']);
-                                      // var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                      // cell.value = element['tanggal']; rows += 1;
-                                      element['peserta'].forEach((pasukan){
-                                        gantiFormat(String tanggal){
-                                          var formatTanggalAwal = DateFormat("yyyy-MM-dd").parse(tanggal);
-                                          return DateFormat("dd-MMM-yyyy").format(formatTanggalAwal);
-                                        }
-                                        koloms = 0;
-                                        rows = rows + 1;
-                                        koloms = header['ID']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = pasukan['nik'].toString();
-                                        koloms = header['Date']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = gantiFormat(element['tanggal']);
-                                        koloms = header['New Working Shift']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = element['shift'];
-                                        koloms = header['SPL On Date']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        // cell.value = null;
-                                        koloms = header['SPL On Time']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        // cell.value = pasukan['nik'];
-                                        koloms = header['SPL On Break Duration']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        // cell.value = pasukan['nik'];
-                                        koloms = (header['SPL Off Date'])!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = gantiFormat(element['tanggal']);
-                                        if((element['shift']).toString().contains("2")){
-                                          cell.value = gantiFormat((DateTime.parse(element['tanggal']).add(const Duration(days: 1))).toString().substring(0,10));
-
-                                          debugPrint(DateTime.parse(element['tanggal']).toString());
-                                        }
-                                        koloms = header['SPL Off Time']!;
-                                        cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
-                                        cell.value = pasukan['jamkhir'];
+                                   _onExport() async {
+                                      var excel = Excel.createExcel();
+                                      Sheet sheet = excel['Sheet1'];
+                                      // for (int i = 0; i < streamSnapshot.data!.docs.length; i++) {
+                                      var semuaDokumen = streamSnapshot.data!
+                                          .docs;
+                                      var rows = 0,
+                                          koloms = 0;
+                                      var cell = sheet.cell(
+                                          CellIndex.indexByColumnRow(
+                                              columnIndex: koloms,
+                                              rowIndex: rows));
+                                      Map<String, int> header = {
+                                        "ID": 0,
+                                        "Date": 1,
+                                        "New Working Shift": 2,
+                                        "SPL On Date": 3,
+                                        "SPL On Time": 4,
+                                        "SPL On Break Duration": 5,
+                                        "SPL Off Date": 6,
+                                        "SPL Off Time": 7,
+                                      };
+                                      header.forEach((key, value) {
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = key;
+                                        koloms = koloms + 1;
                                       });
-                                    });
-                                    // peserta.forEach((pasukan){
-                                    // });
-                                    // var a =  documentSnapshot['section']; // Insert value to selected cell;
-                                    // cell.value = a;
-                                    // debugPrint(a);
-                                    // }
-                                    // var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 1));   //i+1 means when the loop iterates every time it will write values in new row, e.g A1, A2, ...
-                                    // cell.value = "masuk masuk";
+                                      // cell.value = _tanggalController.text;
+                                      semuaDokumen.forEach((element) {
+                                        // debugPrint(element['tanggal']);
+                                        // var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: koloms, rowIndex: rows));
+                                        // cell.value = element['tanggal']; rows += 1;
+                                        element['peserta'].forEach((pasukan) {
+                                        DateTime tanggalBaru = DateFormat("yyyy-MM-dd").parse(element['tanggal']);
+                                        String shiftBaru = element['shift'];
+                                        if (tanggalBaru.weekday == DateTime.saturday || tanggalBaru.weekday == DateTime.sunday) {
+                                          shiftBaru = (tanggalBaru.weekday == DateTime.friday)? "1J NEW" : "1 NEW";
+                                        }
+                                        if ((element['shift']).toString().contains("1")) {
+                                        shiftBaru = (tanggalBaru.weekday == DateTime.friday)
+                                            ? "1J NEW"
+                                            : (tanggalBaru.weekday == DateTime.saturday || tanggalBaru.weekday == DateTime.sunday)
+                                            ? "OFF"
+                                            :"1 NEW";
+                                        }
+                                        if ((element['shift']).toString().contains("2")) {
+                                          shiftBaru = (tanggalBaru.weekday == DateTime.saturday || tanggalBaru.weekday == DateTime.sunday)
+                                              ? "OFF2"
+                                              : "2 NEW";
+                                        }
+                                          gantiFormat(String tanggal) {
+                                            var formatTanggalAwal = DateFormat(
+                                                "yyyy-MM-dd").parse(tanggal);
+                                            return DateFormat("dd-MMM-yyyy")
+                                                .format(formatTanggalAwal);
+                                          }
+                                          koloms = 0;
+                                          rows = rows + 1;
+                                          koloms = header['ID']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          cell.value =
+                                              pasukan['nik'].toString();
+                                          koloms = header['Date']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          cell.value =
+                                              gantiFormat(element['tanggal']);
+                                          koloms = header['New Working Shift']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          cell.value = shiftBaru;
+                                          koloms = header['SPL On Date']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          // cell.value = null;
+                                          koloms = header['SPL On Time']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          // cell.value = pasukan['nik'];
+                                          koloms =
+                                          header['SPL On Break Duration']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          // cell.value = pasukan['nik'];
+                                          koloms = (header['SPL Off Date'])!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          cell.value =
+                                              gantiFormat(element['tanggal']);
+                                          if ((element['shift'])
+                                              .toString()
+                                              .contains("2")) {
+                                            cell.value = gantiFormat(
+                                                (DateTime.parse(
+                                                    element['tanggal']).add(
+                                                    const Duration(days: 1)))
+                                                    .toString()
+                                                    .substring(0, 10));
 
-                                    // final AutoFilter autofilter = worksheet.autoFilters[0];
-                                    // autofilter.addColorFilter('#FF0000', ExcelColorFilterType.cellColor);
-                                    excel.save(fileName: "${_tanggalController.text}.xlsx");
-
-                                  }
-                                  _onExport();
+                                            debugPrint(DateTime.parse(
+                                                element['tanggal']).toString());
+                                          }
+                                          koloms = header['SPL Off Time']!;
+                                          cell = sheet.cell(
+                                              CellIndex.indexByColumnRow(
+                                                  columnIndex: koloms,
+                                                  rowIndex: rows));
+                                          cell.value = pasukan['jamkhir'];
+                                        });
+                                      });
+                                      excel.save(fileName: "${_tanggalController
+                                          .text}.xlsx");
+                                    }
+                                    _onExport();
 
                                 },
-
                                     child: Icon(Icons.download) ),
                               ),
-                            );
+                            ) : Container();
                           }
                       ),
                     ],
@@ -436,7 +489,7 @@ class _ExportExelState extends State<ExportExel> {
                     children: [
                       Column(
                         children: [
-                          Text(
+                          const Text(
                             'Choose Date',
                             style: TextStyle(
                                 fontStyle: FontStyle.italic,
@@ -458,12 +511,12 @@ class _ExportExelState extends State<ExportExel> {
                                   color: Colors.grey[200],
                                   border: Border.all(color: Colors.grey),),
                                 child: TextFormField(
-                                  style: TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 20),
                                   textAlign: TextAlign.center,
                                   enabled: false,
                                   keyboardType: TextInputType.text,
                                   controller: _tanggalController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       disabledBorder:
                                       UnderlineInputBorder(borderSide: BorderSide.none),
                                       // labelText: 'Time',
@@ -472,9 +525,6 @@ class _ExportExelState extends State<ExportExel> {
                               ),
                             ),
                           ),
-
-
-
                         ],
                       ),
 
@@ -577,6 +627,195 @@ class _ExportExelState extends State<ExportExel> {
                       //       );
                       //     }
                       // ),
+
+                      StreamBuilder<QuerySnapshot>(
+                          stream: _exportC,
+                          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                            return kIsWeb ? SizedBox(
+                              width: 180,
+                              height: 60,
+                              child: Container(
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey[200],
+                                  border: Border.all(color: Colors.grey),),
+                                child: ElevatedButton(onPressed: () {
+                                  _onExport() async {
+                                    var excel = Excel.createExcel();
+                                    Sheet sheet = excel['Sheet1'];
+                                    // for (int i = 0; i < streamSnapshot.data!.docs.length; i++) {
+                                    var semuaDokumen = streamSnapshot.data!.docs.where((element) => element['captanggal'].toString().substring(0,10) == selectedDate.toString().substring(0,10));
+                                    var rows = 0,
+                                        koloms = 0;
+                                    var cell = sheet.cell(
+                                        CellIndex.indexByColumnRow(
+                                            columnIndex: koloms,
+                                            rowIndex: rows));
+                                    Map<String, int> header = {
+                                      "ID": 0,
+                                      "Fullname": 1,
+                                      "Working Shift": 2,
+                                      "Date": 3,
+                                      "Permit/Leave Code": 4,
+                                      "Duty On Date": 5,
+                                      "Duty On Time": 6,
+                                      "Duty Off Date": 7,
+                                      "Duty Off Time": 8,
+                                      "Actual Attendance Code" : 9,
+                                      "Leave Note" : 10,
+                                    };
+                                    header.forEach((key, value) {
+                                      cell = sheet.cell(
+                                          CellIndex.indexByColumnRow(
+                                              columnIndex: koloms,
+                                              rowIndex: rows));
+                                      cell.value = key;
+                                      koloms = koloms + 1;
+                                    });
+                                    // cell.value = _tanggalController.text;
+                                    semuaDokumen.forEach((element) {
+                                      DateTime tanggalBaru = DateFormat("yyyy-MM-dd").parse(element['tanggal']);
+                                      String shiftBaru = element['shift'];
+                                      String kategoriString = "";
+                                      // List kategorii = [
+                                      //   element['absen'],
+                                      //   element['cutitahunan'],
+                                      //   element['dinas luar'],
+                                      //   element['dispensasi'],
+                                      //   element['sakit'],
+                                      //   element['tidakupah']
+                                      // ];
+                                      if (element['absen'] != "") kategoriString += "A " ;
+                                      if (element['cutitahunan'] != "") kategoriString += "CT ";
+                                      if (element['dinas luar'] != "") kategoriString += "DL ";
+                                      if (element['dispensasi'] != "") kategoriString += "D " ;
+                                      if (element['sakit'] != "") kategoriString += "S " ;
+                                      if (element['tidakupah'] != "") kategoriString += "TU ";
+
+                                      for (var i = 0; i < int.parse(element['jumlahhari']); i++) {
+                                        if (tanggalBaru.weekday == DateTime.saturday) {
+                                          tanggalBaru = tanggalBaru.add(Duration(days: 2));
+                                        }
+                                        if ((element['shift']).toString().contains("1")) {
+                                          shiftBaru = (tanggalBaru.weekday == DateTime.friday)? "1J NEW" : "1 NEW";
+                                        }
+                                        if ((element['shift']).toString().contains("2")) shiftBaru = "2 NEW";
+
+                                        gantiFormat(String tanggal) {
+                                          DateTime formatTanggalAwal = DateFormat(
+                                              "yyyy-MM-dd").parse(tanggal);
+                                          return DateFormat("M/d/yyyy")
+                                              .format(formatTanggalAwal);
+                                        }
+                                        koloms = 0;
+                                        rows = rows + 1;
+                                        koloms = header['ID']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = element['nik'];
+
+                                        koloms = header['Fullname']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = element['nama_pengaju'];
+
+                                        koloms = header['Working Shift']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = shiftBaru;
+
+                                        koloms = header['Date']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value =
+                                            gantiFormat(element['tanggal']);
+
+                                        koloms = header['Permit/Leave Code']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = kategoriString;
+
+                                        koloms = header['Duty On Date']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = DateFormat("M/d/yyyy").format(tanggalBaru);
+
+                                        koloms = header['Duty On Time']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = "07.00";
+                                        if ((element['shift'])
+                                            .toString()
+                                            .contains("2")) {
+                                          cell.value = "19.00";
+                                        }
+
+                                        koloms = header['Duty Off Date']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = DateFormat("M/d/yyyy").format(tanggalBaru);
+                                        if ((element['shift'])
+                                            .toString()
+                                            .contains("2")) {
+                                          cell.value = DateFormat("M/d/yyyy").format(tanggalBaru.add(Duration(days: 1)));
+                                        }
+
+                                        koloms = header['Duty Off Time']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = "16.10";
+                                        if ((element['shift'])
+                                            .toString()
+                                            .contains("2")) {
+                                          cell.value = "04.10";
+                                        }
+
+                                        koloms =
+                                        header['Actual Attendance Code']!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = kategoriString;
+
+                                        koloms = (header['Leave Note'])!;
+                                        cell = sheet.cell(
+                                            CellIndex.indexByColumnRow(
+                                                columnIndex: koloms,
+                                                rowIndex: rows));
+                                        cell.value = element['keterangan'];
+
+                                        tanggalBaru = tanggalBaru.add(Duration(days: 1));
+                                      }
+                                    });
+
+                                    excel.save(fileName: "${_tanggalController.text}.xlsx");
+                                  }
+                                  _onExport();
+
+                                },
+                                    child: Icon(Icons.download) ),
+                              ),
+                            ) : Container();
+                          }
+                      ),
                     ],
                   ),
 
@@ -601,7 +840,7 @@ class _ExportExelState extends State<ExportExel> {
                                     margin: const EdgeInsets.all(5),
                                     child: ExpansionTile(
                                       title: Text(documentSnapshot['section'].toString()),
-                                      subtitle: Text(documentSnapshot['tanggal']),
+                                      subtitle: Text(Jiffy((documentSnapshot['idtime'] as Timestamp).toDate()).fromNow() + ', ' + (documentSnapshot['idtime'] as Timestamp).toDate().toString().substring(0, 10)),
                                       children: <Widget>[
                                         ListTile(
                                           title: Text("Nama Pengaju: ${documentSnapshot['nama_pengaju'].toString()}"),

@@ -57,7 +57,7 @@ class _HistoryPageState extends State<HistoryPage> {
     debugPrint(selectedDate.toString().substring(0,10));
 
     final Stream<QuerySnapshot> PexportC = FirebaseFirestore.instance.collection('cuti')
-        .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
+        // .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
         .where('status', isEqualTo : 'proses')
         .snapshots();
@@ -69,7 +69,7 @@ class _HistoryPageState extends State<HistoryPage> {
         .snapshots();
 
     final Stream<QuerySnapshot> exportC = FirebaseFirestore.instance.collection('cuti')
-        .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
+        // .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email)
         .where('status', isEqualTo: 'done')
         .snapshots();
@@ -236,51 +236,51 @@ class _HistoryPageState extends State<HistoryPage> {
 
             Column(
               children:<Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        const Text(
-                          'Choose Date',
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: InkWell(
-                            onTap: () {
-                              _selectDate(context);
-                            },
-                            child: Container(
-                              width: 200,
-                              height: 45,
-                              margin: const EdgeInsets.only(top: 2),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
-                                color: Colors.grey[200],
-                                border: Border.all(color: Colors.grey),),
-                              child: TextFormField(
-                                style: const TextStyle(fontSize: 20),
-                                textAlign: TextAlign.center,
-                                enabled: false,
-                                keyboardType: TextInputType.text,
-                                controller: _tanggalController,
-                                decoration: const InputDecoration(
-                                    disabledBorder:
-                                    UnderlineInputBorder(borderSide: BorderSide.none),
-                                    // labelText: 'Time',
-                                    contentPadding: EdgeInsets.only(top: 0.0)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //   children: const [
+                //     // Column(
+                //     //   children: [
+                //     //     const Text(
+                //     //       'Choose Date',
+                //     //       style: TextStyle(
+                //     //           fontStyle: FontStyle.italic,
+                //     //           fontWeight: FontWeight.w600,
+                //     //           letterSpacing: 0.5),
+                //     //     ),
+                //     //     Padding(
+                //     //       padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                //     //       child: InkWell(
+                //     //         onTap: () {
+                //     //           _selectDate(context);
+                //     //         },
+                //     //         child: Container(
+                //     //           width: 200,
+                //     //           height: 45,
+                //     //           margin: const EdgeInsets.only(top: 2),
+                //     //           alignment: Alignment.center,
+                //     //           decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
+                //     //             color: Colors.grey[200],
+                //     //             border: Border.all(color: Colors.grey),),
+                //     //           child: TextFormField(
+                //     //             style: const TextStyle(fontSize: 20),
+                //     //             textAlign: TextAlign.center,
+                //     //             enabled: false,
+                //     //             keyboardType: TextInputType.text,
+                //     //             controller: _tanggalController,
+                //     //             decoration: const InputDecoration(
+                //     //                 disabledBorder:
+                //     //                 UnderlineInputBorder(borderSide: BorderSide.none),
+                //     //                 // labelText: 'Time',
+                //     //                 contentPadding: EdgeInsets.only(top: 0.0)),
+                //     //           ),
+                //     //         ),
+                //     //       ),
+                //     //     ),
+                //     //   ],
+                //     // ),
+                //   ],
+                // ),
 
                 Expanded(
                   child: StreamBuilder(
@@ -447,51 +447,51 @@ class _HistoryPageState extends State<HistoryPage> {
 
             Column(
               children:<Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        const Text(
-                          'Choose Date',
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: InkWell(
-                            onTap: () {
-                              _selectDate(context);
-                            },
-                            child: Container(
-                              width: 200,
-                              height: 45,
-                              margin: const EdgeInsets.only(top: 2),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
-                                color: Colors.grey[200],
-                                border: Border.all(color: Colors.grey),),
-                              child: TextFormField(
-                                style: const TextStyle(fontSize: 20),
-                                textAlign: TextAlign.center,
-                                enabled: false,
-                                keyboardType: TextInputType.text,
-                                controller: _tanggalController,
-                                decoration: const InputDecoration(
-                                    disabledBorder:
-                                    UnderlineInputBorder(borderSide: BorderSide.none),
-                                    // labelText: 'Time',
-                                    contentPadding: EdgeInsets.only(top: 0.0)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //   children: [
+                //     Column(
+                //       children: [
+                //         const Text(
+                //           'Choose Date',
+                //           style: TextStyle(
+                //               fontStyle: FontStyle.italic,
+                //               fontWeight: FontWeight.w600,
+                //               letterSpacing: 0.5),
+                //         ),
+                //         // Padding(
+                //         //   padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                //         //   child: InkWell(
+                //         //     onTap: () {
+                //         //       _selectDate(context);
+                //         //     },
+                //         //     child: Container(
+                //         //       width: 200,
+                //         //       height: 45,
+                //         //       margin: const EdgeInsets.only(top: 2),
+                //         //       alignment: Alignment.center,
+                //         //       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),
+                //         //         color: Colors.grey[200],
+                //         //         border: Border.all(color: Colors.grey),),
+                //         //       child: TextFormField(
+                //         //         style: const TextStyle(fontSize: 20),
+                //         //         textAlign: TextAlign.center,
+                //         //         enabled: false,
+                //         //         keyboardType: TextInputType.text,
+                //         //         controller: _tanggalController,
+                //         //         decoration: const InputDecoration(
+                //         //             disabledBorder:
+                //         //             UnderlineInputBorder(borderSide: BorderSide.none),
+                //         //             // labelText: 'Time',
+                //         //             contentPadding: EdgeInsets.only(top: 0.0)),
+                //         //       ),
+                //         //     ),
+                //         //   ),
+                //         // ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
 
                 Expanded(
                   child: StreamBuilder(

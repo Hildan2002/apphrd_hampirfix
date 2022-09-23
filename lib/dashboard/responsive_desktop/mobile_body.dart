@@ -3,7 +3,6 @@ import 'package:aplikasi_hrd/request/cuti_form.dart';
 import 'package:aplikasi_hrd/request/cuti_qusus.dart';
 import 'package:aplikasi_hrd/request/export_excel.dart';
 import 'package:aplikasi_hrd/request/history.dart';
-import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -156,28 +155,6 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                   );
                                 }
                             ),
-                            // StreamBuilder<QuerySnapshot>(
-                            //     stream: _notif2,
-                            //     builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                            //       if(streamSnapshot.hasData && streamSnapshot.data?.docs.length == 0){
-                            //         return Text('Belum Ada Permintaan Inventaris',
-                            //           textAlign: TextAlign.center,
-                            //           style: TextStyle(
-                            //             fontSize: 1,
-                            //               color: Colors.white,
-                            //           ),
-                            //         );
-                            //       }
-                            //       return Text(
-                            //         "Ada permintaan Inventaris ${streamSnapshot.data?.docs.length}",
-                            //         textAlign: TextAlign.center,
-                            //         style: TextStyle(
-                            //           color: Color(0xFF22215B).withOpacity(0.6),
-                            //           fontSize: 16,
-                            //         ),
-                            //       );
-                            //     }
-                            // ),
                           ],
                         ),
                       ],
@@ -217,20 +194,66 @@ class _MobileScaffoldState extends State<MobileScaffold> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                InkWell(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RequestOvertime())
-                    );
-                  },
-                  child: const CardFolder(
-                    image: Icon(Icons.more_time_sharp, size: 25,),
-                    title: "Overtime",
-                    date: "Request Overtime",
-                    color: Color(0xFF415EB6),
-                  ),
+                StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const Text("Something went wrong");
+                      }
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return const CircularProgressIndicator();
+                      }
+                      if(snapshot.data!['lembur'] == 'khusus') {
+                        return InkWell(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const RequestOvertime())
+                            );
+                          },
+                          child: const CardFolder(
+                            image: Icon(Icons.more_time_sharp, size: 25,),
+                            title: "Lembur",
+                            date: "Pengajuan Lembur",
+                            color: Color(0xFF415EB6),
+                          ),
+                        );
+                      }
+                      else{
+                        return InkWell(
+                          onTap: () {
+                            ElegantNotification.error(
+                              title: const Text('Forbidden'),
+                              description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
+                              notificationPosition: NotificationPosition.top,
+                              // dismissible: true,
+                            ).show(context);
+                          },
+                          child: const CardFolder(
+                            image: Icon(Icons.inbox, size: 25,),
+                            // image: Image.asset("assets/icons/folder-23B0B0.png"),
+                            title: "Approval",
+                            date: "Approved by HRD",
+                            color: Color(0xFF23B0B0),
+                          ),
+                        );
+                      }
+                    }
                 ),
+                // InkWell(
+                //   onTap: (){
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) => const RequestOvertime())
+                //     );
+                //   },
+                //   child: const CardFolder(
+                //     image: Icon(Icons.more_time_sharp, size: 25,),
+                //     title: "Lembur",
+                //     date: "Pengajuan Lembur",
+                //     color: Color(0xFF415EB6),
+                //   ),
+                // ),
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -254,7 +277,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                               size: 25,
                             ),
                             title: "Cuti",
-                            date: "Tombol Formulit Cuti",
+                            date: "Pengajuan Cuti",
                             color: Color(0xFFFFB110),
                           ),
                         );
@@ -273,7 +296,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                             size: 25,
                           ),
                           title: "Cuti",
-                          date: "Tombol Formulit Cuti",
+                          date: "Pengajuan Cuti",
                           color: Color(0xFFFFB110),
                         ),
                       );
@@ -298,8 +321,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                   },
                   child: const CardFolder(
                     image: Icon(Icons.inventory),
-                    title: "Pesan",
-                    date: "Pesanan Masuk",
+                    title: "Permintaan",
+                    date: "Permintaan Masuk",
                     color: Color(0xFFAC4040),
                   ),
                 ),
@@ -324,8 +347,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                           child: const CardFolder(
                             image: Icon(Icons.inbox, size: 25,),
                             // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                            title: "Inbox",
-                            date: "Inbox Request",
+                            title: "Approval",
+                            date: "Approved by HRD",
                             color: Color(0xFF23B0B0),
                           ),
                         );
@@ -343,8 +366,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                           child: const CardFolder(
                             image: Icon(Icons.inbox, size: 25,),
                             // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                            title: "Inbox",
-                            date: "Inbox Request",
+                            title: "Approval",
+                            date: "Approved by HRD",
                             color: Color(0xFF23B0B0),
                           ),
                         );

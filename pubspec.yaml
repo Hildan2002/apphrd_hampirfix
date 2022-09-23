@@ -61,6 +61,7 @@ dependencies:
   open_file: ^3.2.1
   flutter_downloader: ^1.8.4
   url_launcher: ^6.1.5
+  jiffy: ^5.0.0
 
 
 dev_dependencies:

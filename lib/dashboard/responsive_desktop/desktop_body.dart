@@ -140,19 +140,51 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InkWell(
-                          onTap: (){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const RequestOvertime())
-                            );
-                          },
-                          child: const CardFolderDesktop(
-                            image: Icon(Icons.more_time_sharp, size: 25,),
-                            title: "Overtime",
-                            date: "Request Overtime",
-                            color: Color(0xFF415EB6),
-                          ),
+                        StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return const Text("Something went wrong");
+                              }
+                              if(snapshot.connectionState == ConnectionState.waiting){
+                                return const CircularProgressIndicator();
+                              }
+                              if(snapshot.data!['lembur'] == 'khusus') {
+                                return InkWell(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const RequestOvertime())
+                                    );
+                                  },
+                                  child: const CardFolderDesktop(
+                                    image: Icon(Icons.more_time_sharp, size: 25,),
+                                    title: "Lembur",
+                                    date: "Pengajuan Lembur",
+                                    color: Color(0xFF415EB6),
+                                  ),
+                                );
+                              }
+                              else{
+                                return InkWell(
+                                  onTap: () {
+                                    ElegantNotification.error(
+                                      title: const Text('Forbidden'),
+                                      description: const Text('Menu Ini Hanya DIperuntukkan Untuk Admin'),
+                                      notificationPosition: NotificationPosition.top,
+                                      // dismissible: true,
+                                    ).show(context);
+                                  },
+                                  child: const CardFolderDesktop(
+                                    image: Icon(Icons.inbox, size: 25,),
+                                    // image: Image.asset("assets/icons/folder-23B0B0.png"),
+                                    title: "Approval",
+                                    date: "Approved by HRD",
+                                    color: Color(0xFF23B0B0),
+                                  ),
+                                );
+                              }
+                            }
                         ),
                         StreamBuilder<DocumentSnapshot>(
                             stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
@@ -210,8 +242,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                           },
                           child: const CardFolderDesktop(
                             image: Icon(Icons.inventory),
-                            title: "Pesan",
-                            date: "kotak pesan",
+                            title: "Permintaan",
+                            date: "Permintaan Masuk",
                             color: Color(0xFFAC4040),
                           ),
                         ),
@@ -240,8 +272,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   child: const CardFolderDesktop(
                                     image: Icon(Icons.inbox, size: 25,),
                                     // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                                    title: "Inbox",
-                                    date: "Inbox Request",
+                                    title: "Approval",
+                                    date: "Approved by HRD",
                                     color: Color(0xFF23B0B0),
                                   ),
                                 );
@@ -258,8 +290,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                 child: const CardFolderDesktop(
                                   image: Icon(Icons.inbox, size: 25,),
                                   // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                                  title: "Inbox",
-                                  date: "Inbox Request",
+                                  title: "Approval",
+                                  date: "Approved by HRD",
                                   color: Color(0xFF23B0B0),
                                 ),
                               );

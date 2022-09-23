@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aplikasi_hrd/main.dart';
+import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -118,6 +119,7 @@ class _RequestCutiState extends State<RequestCuti> {
     'CNC',
     'MFG2',
     'MAINTENANCE',
+    'MARKETING',
     'PPIC',
     'IT',
     'ACCOUNTING',
@@ -125,12 +127,16 @@ class _RequestCutiState extends State<RequestCuti> {
     'ENGINEERING',
     'QA',
     'QC',
-    'MARKETING'
+  ];
+
+  static const menuItems2 = <String>[
+    'Shift 1',
+    'Shift 2'
   ];
 
 
-
   String? _butonSelected1;
+  String? _butonSelected2;
 
   final _jumlahhariController = TextEditingController();
   final _atasnamaController = TextEditingController();
@@ -150,6 +156,13 @@ class _RequestCutiState extends State<RequestCuti> {
 
 
   final List<DropdownMenuItem<String>> _dropDownMenuItems = menuItems.map(
+        (String value) =>
+        DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        ),
+  ).toList();
+  final List<DropdownMenuItem<String>> _dropDownMenuItems2 = menuItems2.map(
         (String value) =>
         DropdownMenuItem<String>(
           value: value,
@@ -246,8 +259,9 @@ class _RequestCutiState extends State<RequestCuti> {
   }
 
   String? periksa;
-  String pengaju = FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf('@'));
   String nameid = FirebaseAuth.instance.currentUser!.email.toString().substring(FirebaseAuth.instance.currentUser!.email.toString().indexOf('@')+1, FirebaseAuth.instance.currentUser!.email.toString().indexOf('.'));
+  String pengaju = nama[nik.indexOf(FirebaseAuth.instance.currentUser!.email.toString().substring(FirebaseAuth.instance.currentUser!.email.toString().indexOf('@')+1, FirebaseAuth.instance.currentUser!.email.toString().indexOf('.')))];
+  // String pengaju = FirebaseAuth.instance.currentUser!.email.toString().substring(0, FirebaseAuth.instance.currentUser!.email.toString().indexOf('@'));
 
   _onDone() {
     debugPrint("ondony");
@@ -261,8 +275,8 @@ class _RequestCutiState extends State<RequestCuti> {
     // var nik = _nikController;
     var keterangan = _keteranganController;
     // var namePic = _atasnamaController.text;
-    var tanggal = selectedDate;
-    var tanggal2 = selectedDate2;
+    DateTime tanggal = selectedDate;
+    DateTime tanggal2 = selectedDate2;
     var secdept = _butonSelected1;
     // var list_pegawai = "ujicoba";
     // final idStep =  {
@@ -314,6 +328,7 @@ class _RequestCutiState extends State<RequestCuti> {
       secdept: secdept,
       periksa: periksa,
       tanggal2: tanggal2,
+      shift: _butonSelected2,
       keterangan: keterangan.text,
       jumlah_hari: jumlahHari.text,
       cutitahunan: cutitahunan,
@@ -529,6 +544,28 @@ class _RequestCutiState extends State<RequestCuti> {
                               border: UnderlineInputBorder(),
                               labelText: 'Jumlah Hari yang Diambil',
                             ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 16),
+                          child: DropdownButtonFormField(
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Form ini wajib dipilih';
+                              }
+                              return null;
+                            },
+                            value: _butonSelected2,
+                            hint: Text('Pilih Shift'),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _butonSelected2 = newValue;
+                                });
+                              }
+                            }, items: _dropDownMenuItems2,
                           ),
                         ),
 
@@ -831,7 +868,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 // }
                               },
                               child: const Text(
-                                'Upload Bukti Surat Dokter',
+                                  'Upload Bukti File',
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
@@ -949,6 +986,7 @@ class _RequestCutiState extends State<RequestCuti> {
     required String absen,
     required String dinasluar,
     required String jumlah_hari,
+    required String? shift,
     required String name_pengaju,
     required String nik,
     required String keterangan,
@@ -973,6 +1011,7 @@ class _RequestCutiState extends State<RequestCuti> {
       'nik' : nik,
       'keterangan' : keterangan,
       'jumlahhari' : jumlah_hari,
+      'shift' : shift,
       'cutitahunan' : cutitahunan,
       'dispensasi' : dispensasi,
       'tidakupah' : izintidakupah,
@@ -1027,9 +1066,10 @@ class _RequestCutiState extends State<RequestCuti> {
         } while (tanggalBaru.weekday == DateTime.saturday || tanggalBaru.weekday == DateTime.sunday);
         x--;
       }
+      selectedDate2 = tanggalBaru;
       _tanggal2Controller.text = DateFormat.yMMMEd().format(tanggalBaru);
     } else {
-      _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
+      _tanggal2Controller.text = DateFormat.yMMMEd().format(selectedDate);
     }
     // harii != ''  ? _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now().add(Duration(days: int.parse(harii)))) : _tanggal2Controller.text = DateFormat.yMMMEd().format(DateTime.now());
   }
