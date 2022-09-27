@@ -313,7 +313,7 @@ class _RequestCutiState extends State<RequestCuti> {
         periksa = 'widodo@0368.nsi';
         break;
       default :
-        periksa = 'salah';
+        periksa = 'salah@';
         break;
     }
     debugPrint(periksa);
@@ -364,7 +364,7 @@ class _RequestCutiState extends State<RequestCuti> {
           appBar: BackdropAppBar(
             backgroundColor: Colors.blue,
             title: const Text(
-              'Request Cuti',
+              'Pengajuan Cuti',
                style: TextStyle(
                  color: Colors.black54
                ),
@@ -868,7 +868,7 @@ class _RequestCutiState extends State<RequestCuti> {
                                 // }
                               },
                               child: const Text(
-                                  'Upload Bukti File',
+                                  'Upload Surat Keterangan Dokter',
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
@@ -967,8 +967,6 @@ class _RequestCutiState extends State<RequestCuti> {
                     child: FirebaseAnimatedList(
                           query: FirebaseDatabase.instance.ref().child("1WN6-rKKfO8AryfhtQ7ZbDxZcGLEM7W45Qm2I7bmmfu4/Sheet1/A${(imel)?.substring(imel.indexOf("@")+1, imel.indexOf("."))}"),
                           itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index){
-                            // Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
-                            // map.values.toList()[index]['id'];
                             return Text('${snapshot.key}: ${snapshot.value}',
                               textAlign: TextAlign.justify,
                               style: GoogleFonts.roboto(fontSize: 20,),

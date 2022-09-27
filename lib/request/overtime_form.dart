@@ -461,7 +461,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
         periksa = 'samsu@0012.nsi';
         break;
       case 'PPIC' :
-        periksa = 'cecep@0123.nsi';
+        periksa = 'cep@0178.nsi';
         break;
       case 'ACCOUNTING' :
         periksa = 'harlan@0693.nsi';
@@ -508,7 +508,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.black,
-            title: const Text('Request Overtime'),
+            title: const Text('Pengajuan Lembur'),
             bottom: const TabBar(
               indicatorColor: Colors.lime,
               indicatorWeight: 5.0,

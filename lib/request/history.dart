@@ -55,6 +55,8 @@ class _HistoryPageState extends State<HistoryPage> {
         .where('status', isEqualTo : 'proses')
         .snapshots();
     debugPrint(selectedDate.toString().substring(0,10));
+    final imel = FirebaseAuth.instance.currentUser!.email;
+    debugPrint("${(imel)?.substring(imel.indexOf("@")+1, imel.indexOf("."))}");
 
     final Stream<QuerySnapshot> PexportC = FirebaseFirestore.instance.collection('cuti')
         // .where('tanggal', isEqualTo: selectedDate.toString().substring(0,10))
@@ -88,7 +90,7 @@ class _HistoryPageState extends State<HistoryPage> {
             unselectedLabelColor: Colors.grey,
             tabs: [
               Tab(
-                text: 'Progress Overtime',
+                text: 'Progress OT',
                 icon: Icon(
                   Icons.book_outlined,
                   color: Colors.white,

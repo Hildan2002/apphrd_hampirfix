@@ -50,11 +50,14 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               elevation: 0,
               child: Column(
                 children: [
-                  const DrawerHeader(
-                    child: Icon(
-                      Icons.favorite,
-                      size: 64,
+                  DrawerHeader(
+                    child: Image.asset(
+                        'assets/images/pt.png',
                     ),
+                    // Icon(
+                    //   Icons.favorite,
+                    //   size: 64,
+                    // ),
                   ),
                   // Padding(
                   //   padding: tilePadding,
@@ -176,11 +179,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                     ).show(context);
                                   },
                                   child: const CardFolderDesktop(
-                                    image: Icon(Icons.inbox, size: 25,),
-                                    // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                                    title: "Approval",
-                                    date: "Approved by HRD",
-                                    color: Color(0xFF23B0B0),
+                                    image: Icon(Icons.more_time_sharp, size: 25,),
+                                    title: "Lembur",
+                                    date: "Pengajuan Lembur",
+                                    color: Color(0xFF415EB6),
                                   ),
                                 );
                               }
@@ -208,7 +210,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   },
                                   child: const CardFolderDesktop(
                                     image: Icon(Icons.card_travel, size: 25,),
-                                    title: "Off Work",
+                                    title: "Cuti",
                                     date: "Tombol Form Cuti",
                                     color: Color(0xFFFFB110),
                                   ),
@@ -224,20 +226,19 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   },
                                   child: const CardFolderDesktop(
                                     image: Icon(Icons.card_travel, size: 25,),
-                                    title: "Off Work",
+                                    title: "Cuti",
                                     date: "Tombol Form Cuti",
                                     color: Color(0xFFFFB110),
                                   ),
                                 );
                               }
-
                           }
                         ),
                         InkWell(
                           onTap: (){
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) =>const OvertimeView())
+                                MaterialPageRoute(builder: (context) => const OvertimeView())
                             );
                           },
                           child: const CardFolderDesktop(

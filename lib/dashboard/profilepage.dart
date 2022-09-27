@@ -60,6 +60,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                     controller: _PasswordbaruController,
                     textInputAction: TextInputAction.next,
                     autofocus: true,
+                    onChanged: (String value) async {
+                      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'kode' : value});
+                    },
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: 'Password Baru',
@@ -73,7 +76,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         FirebaseAuth.instance.currentUser!.updatePassword(_PasswordbaruController.text);
                         FirebaseAuth.instance.signOut();
                       });
-                      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'password' : _PasswordbaruController});
+                      // await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'password' : _PasswordbaruController});
 
                     },
                     child: Text('Change Password'))
