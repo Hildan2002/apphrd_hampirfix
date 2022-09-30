@@ -19,6 +19,8 @@ class RequestOvertime extends StatefulWidget {
 }
 
 class _RequestOvertimeState extends State<RequestOvertime> {
+  String nameid = FirebaseAuth.instance.currentUser!.email.toString().substring(FirebaseAuth.instance.currentUser!.email.toString().indexOf('@')+1, FirebaseAuth.instance.currentUser!.email.toString().indexOf('.'));
+  String pengaju = nama[nik.indexOf(FirebaseAuth.instance.currentUser!.email.toString().substring(FirebaseAuth.instance.currentUser!.email.toString().indexOf('@')+1, FirebaseAuth.instance.currentUser!.email.toString().indexOf('.')))];
   final _formKey = GlobalKey<FormState>();
   void sendPushMessage(String token) async {
     try {
@@ -145,81 +147,112 @@ class _RequestOvertimeState extends State<RequestOvertime> {
     jamaTECs.add(jamawalController);
     jamkhirTECs.add(jamkhirController);
     return Card(
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           const SizedBox(height: 5),
-          Text('Karyawan ${cards.length + 1}'),
-          const SizedBox(height: 20),
+          Text('${cards.length + 1}.'),
+          const SizedBox(height: 10),
+          Expanded(
+            child: RawAutocomplete(
+                textEditingController: nameController,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text == '') {
+                    return const Iterable<String>.empty();
+                  }
+                  return nama.where((String option) {
+                    return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                  });
+                },
 
-          RawAutocomplete(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') {
-                  return const Iterable<String>.empty();
-                }
-                return nama.where((String option) {
-                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                });
-              },
+                fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    child: TextFormField(
+                        autofocus: true,
+                        validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Form ini wajib diisi';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Nama'
 
-              fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: TextFormField(
-                      autofocus: true,
-                      validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Form ini wajib diisi';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Nama'
-
+                      ),
+                      controller: texteditingcontroller,
+                      focusNode: focusNode,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (String selection) {
+                          if (texteditingcontroller.text.isEmpty){
+                            texteditingcontroller.text = nameController.text;
+                          }
+                        // nameController.text = texteditingcontroller.text;
+                        // texteditingcontroller.text = nameController.text;
+                      },
                     ),
-                    controller: texteditingcontroller,
-                    focusNode: focusNode,
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (String selection) {
-                      nameController.text = texteditingcontroller.text;
-                    },
-                  ),
-                );
-              },
-              optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
-                  Iterable<String> options) {
-                return Material(
-                    child: SizedBox(
-                        height: 200,
-                        child: SingleChildScrollView(
-                            child: Column(
-                              children: options.map((opt) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      onSelected(opt);
-                                      nameController.text = opt;
-                                      nikController.text = nik[nama.indexOf(opt)];
-                                    },
-                                    child: Container(
-                                        padding: const EdgeInsets.only(right: 60),
-                                        child: Card(
-                                            child: Container(
-                                              width: double.infinity,
-                                              padding: const EdgeInsets.all(10),
-                                              child: Text(opt),
-                                            )
-                                        )
-                                    )
-                                );
-                              }).toList(),
-                            )
-                        )
-                    )
-                );
-              }),
+                  );
+                },
+                optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+                    Iterable<String> options) {
+                  return Material(
+                      child: SizedBox(
+                          height: 200,
+                          child: SingleChildScrollView(
+                              child: Column(
+                                children: options.map((opt) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        onSelected(opt);
+                                        nameController.text = opt;
+                                        // nameController.text = nama[nama.indexOf(opt)];
+                                        nikController.text = nik[nama.indexOf(opt)].toUpperCase();
+                                        jamawalController.text = _butonSelected2 == "Shift 1"
+                                            ? selectedDate.weekday == DateTime.friday
+                                            ? "16.40" //jumat
+                                            : selectedDate.weekday == DateTime.saturday || selectedDate.weekday == DateTime.sunday
+                                            ? "07.00" //weekend
+                                            : "16.10" //biasa
+                                            : (selectedDate.weekday == DateTime.saturday || selectedDate.weekday == DateTime.sunday
+                                            ? "19.00" //weekend 2
+                                            : "04.10");//shift 2
+                                        jamkhirController.text = _butonSelected2 == "Shift 1"
+                                            ? selectedDate.weekday == DateTime.saturday || selectedDate.weekday == DateTime.sunday
+                                            ? "16.10" //weekend
+                                            : "19.00" //biasa
+                                            : (selectedDate.weekday == DateTime.saturday || selectedDate.weekday == DateTime.sunday
+                                            ? "04.10" //weekend 2
+                                            : "07.00");//shift 2
+                                        // if(_butonSelected2 == "Shift 1"){
+                                        //   jamawalController.text = "16.10";
+                                        //   if(selectedDate.weekday == DateTime.friday) jamawalController.text = "16.40";
+                                        // } else if (_shiftController.text == "Shift 2") {
+                                        //   jamawalController.text = "04.10";
+                                        // } else {
+                                        //   jamawalController.text = "Bingung";
+                                        // }
+                                      },
+                                      child: Container(
+                                          padding: const EdgeInsets.only(right: 60),
+                                          child: Card(
+                                              child: Container(
+                                                width: double.infinity,
+                                                padding: const EdgeInsets.all(10),
+                                                child: Text(opt),
+                                              )
+                                          )
+                                      )
+                                  );
+                                }).toList(),
+                              )
+                          )
+                      )
+                  );
+                }),
+          ),
 
           // Padding(
           //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -240,97 +273,177 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           //   ),
           // ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Form ini wajib diisi';
-                }
-                return null;
-              },
-              textInputAction: TextInputAction.next,
-              controller: nikController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'NIK',
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Form ini wajib diisi';
+                  }
+                  return null;
+                },
+                textInputAction: TextInputAction.next,
+                controller: nikController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'NIK',
+                ),
               ),
             ),
           ),
 
           // SizedBox(height: 5),
 
-          RawAutocomplete(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') {
-                  return const Iterable<String>.empty();
-                }
-                return kerjaan.where((String option) {
-                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                });
-              },
+          Expanded(
+            child: RawAutocomplete(
+                textEditingController: jobController,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text == '') {
+                    return const Iterable<String>.empty();
+                  }
+                  return kerjaan.where((String option) {
+                    return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                  });
+                },
 
-              fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: TextFormField(
-                    autofocus: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Form ini wajib diisi';
-                      }
-                      return null;
-                    },
-                        decoration: const InputDecoration(
+                fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    child: TextFormField(
+                      autofocus: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Form ini wajib diisi';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'Pekerjaan',
-                          ),
-                    controller: texteditingcontroller,
-                    focusNode: focusNode,
-                    textInputAction: TextInputAction.next,
-                    onFieldSubmitted: (String selection) {
-                      jobController.text = texteditingcontroller.text;
-                    },
-                    onChanged: (String value){
-                      jobController.text = texteditingcontroller.text;
-                    },
-                  ),
-                );
-              },
-              optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
-                  Iterable<String> options) {
-                return Material(
-                    child: SizedBox(
-                        height: 200,
-                        child: SingleChildScrollView(
-                            child: Column(
-                              children: options.map((opt) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      onSelected(opt);
-                                      jobController.text = opt;
-                                      // nikController.text = nik[nama.indexOf(opt)];
-                                    },
-                                    child: Container(
-                                        padding: const EdgeInsets.only(right: 60),
-                                        child: Card(
-                                            child: Container(
-                                              width: double.infinity,
-                                              padding: const EdgeInsets.all(10),
-                                              child: Text(opt),
-                                            )
-                                        )
-                                    )
-                                );
-                              }).toList(),
-                            )
-                        )
-                    )
-                );
-              }),
+                          labelText: 'Pekerjaan'
+
+                      ),
+                      controller: texteditingcontroller,
+                      focusNode: focusNode,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (String selection) {
+                        onFieldSubmitted();
+                        // nameController.text = texteditingcontroller.text;
+                        // texteditingcontroller.text = nameController.text;
+                      },
+                    ),
+                  );
+                },
+                optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+                    Iterable<String> options) {
+                  return Material(
+                      child: SizedBox(
+                          height: 200,
+                          child: SingleChildScrollView(
+                              child: Column(
+                                children: options.map((opt) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        onSelected(opt);
+                                        jobController.text = opt;
+                                        nikController.text = nik[nama.indexOf(opt)];
+                                      },
+                                      child: Container(
+                                          padding: const EdgeInsets.only(right: 60),
+                                          child: Card(
+                                              child: Container(
+                                                width: double.infinity,
+                                                padding: const EdgeInsets.all(10),
+                                                child: Text(opt),
+                                              )
+                                          )
+                                      )
+                                  );
+                                }).toList(),
+                              )
+                          )
+                      )
+                  );
+                }),
+          ),
+
+          // Expanded(
+          //   child: RawAutocomplete(
+          //       textEditingController: jobController,
+          //       optionsBuilder: (TextEditingValue textEditingValue) {
+          //         if (textEditingValue.text == '') {
+          //           return const Iterable<String>.empty();
+          //         }
+          //         return kerjaan.where((String option) {
+          //           return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+          //         });
+          //       },
+          //
+          //       fieldViewBuilder: (BuildContext context, TextEditingController texteditingcontroller,
+          //           FocusNode focusNode,
+          //           VoidCallback onFieldSubmitted) {
+          //         return Padding(
+          //           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          //           child: TextFormField(
+          //             autofocus: true,
+          //             validator: (value) {
+          //               if (value == null || value.isEmpty) {
+          //                 return 'Form ini wajib diisi';
+          //               }
+          //               return null;
+          //             },
+          //                 decoration: const InputDecoration(
+          //                   border: UnderlineInputBorder(),
+          //                   labelText: 'Pekerjaan',
+          //                   ),
+          //             controller: texteditingcontroller,
+          //             focusNode: focusNode,
+          //             textInputAction: TextInputAction.next,
+          //             onFieldSubmitted: (String selection) {
+          //               jobController.text = texteditingcontroller.text;
+          //             },
+          //             textAlign: TextAlign.start,
+          //             onChanged: (String value){
+          //               jobController.text = texteditingcontroller.text;
+          //             },
+          //           ),
+          //         );
+          //       },
+          //       optionsViewBuilder: (BuildContext context, void Function(String) onSelected,
+          //           Iterable<String> options) {
+          //         return Material(
+          //             child: SizedBox(
+          //                 height: 200,
+          //                 child: SingleChildScrollView(
+          //                     child: Column(
+          //                       children: options.map((opt) {
+          //                         return GestureDetector(
+          //                             onTap: () {
+          //                               onSelected(opt);
+          //                               jobController.text = opt;
+          //                               // nikController.text = nik[nama.indexOf(opt)];
+          //                             },
+          //                             child: Container(
+          //                                 padding: const EdgeInsets.only(right: 60),
+          //                                 child: Card(
+          //                                     child: Container(
+          //                                       width: double.infinity,
+          //                                       padding: const EdgeInsets.all(10),
+          //                                       child: Text(opt),
+          //                                     )
+          //                                 )
+          //                             )
+          //                         );
+          //                       }).toList(),
+          //                     )
+          //                 )
+          //             )
+          //         );
+          //       }),
+          // ),
 
           // Padding(
           //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -352,21 +465,28 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           // ),
 
           // SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Form ini wajib diisi dengan format hh.mm';
-                }
-                return null;
-              },
-              textInputAction: TextInputAction.next,
-              controller: jamawalController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Perkiraan waktu lembur dimulai',
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Form ini wajib diisi dengan format hh.mm';
+                  }
+                  return null;
+                },
+                // initialValue: _shiftController.text == "Shift 1"
+                //     ? selectedDate.weekday == DateTime.friday
+                //     ? "16.40"
+                //     : "16.10"
+                //     : "04.10",
+                textInputAction: TextInputAction.next,
+                controller: jamawalController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Jam Awal',
+                ),
               ),
             ),
           ),
@@ -374,25 +494,27 @@ class _RequestOvertimeState extends State<RequestOvertime> {
           // SizedBox(height: 5),
 
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            child: TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Form ini wajib diisi dengan format "hh.mm"';
-                }
-                return null;
-              },
-              onFieldSubmitted: (value){
-                setState(() => cards.add(createCard()));
-              },
-              controller: jamkhirController,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'perkiraan waktu lembur berakhir',
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Form ini wajib diisi dengan format "hh.mm"';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (value){
+                  setState(() => cards.add(createCard()));
+                },
+                controller: jamkhirController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Jam Akhir',
 
+                ),
+                textInputAction: TextInputAction.done,
               ),
-              textInputAction: TextInputAction.done,
             ),
           ),
           // SizedBox(height: 15),
@@ -420,6 +542,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
   }
 
   String? periksa;
+
 
   _onDone() {
     var namePic = _tjController.text;
@@ -484,6 +607,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
         periksa = 'salah';
         break;
     }
+
     debugPrint(periksa);
 
     CRUD(name_pic: namePic,
@@ -536,6 +660,63 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
+                        child: DropdownButtonFormField(
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Form ini wajib dipilih';
+                            }
+                            return null;
+                          },
+                          value: _butonSelected1,
+                          hint: const Text('Pilih Department'),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _butonSelected1 = newValue;
+                                switch (newValue) {
+                                  case 'MARKETING' :
+                                    _tjController.text = 'Yujiro Takeuchi-San';
+                                    break;
+                                  case 'CAM':
+                                  case 'CNC':
+                                    _tjController.text = 'Bapak Rohmad Hidayat';
+                                    // idtoken
+                                    break;
+                                  case 'MFG2' :
+                                    _tjController.text = 'Bapak Samsu';
+                                    break;
+                                  case 'PPIC' :
+                                    _tjController.text = 'Bapak Cep Suwandi';
+                                    break;
+                                  case 'ACCOUNTING' :
+                                    _tjController.text = 'Bapak Harlan Budiharto';
+                                    break;
+                                  case 'ENGINEERING' :
+                                    _tjController.text = 'Bapak Sumadi';
+                                    break;
+                                  case 'QA' :
+                                    _tjController.text = 'Bapak Dedi Irawadi';
+                                    break;
+                                  case 'QC' :
+                                    _tjController.text = 'Bapak Yana Suryana';
+                                    break;
+                                  case 'IT' :
+                                  case'ADMIN':
+                                  case 'MAINTENANCE' :
+                                    _tjController.text = 'Bapak Widodo Bodro Husodo';
+                                    break;
+                                  default :
+                                    _tjController.text = 'Salah Belum Input nama@';
+                                    break;
+                                }
+                              });
+                            }
+                          }, items: _dropDownMenuItems,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 16),
                         child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -550,28 +731,6 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                             border: UnderlineInputBorder(),
                             labelText: 'Nama Penanggung Jawab',
                           ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 16),
-                        child: DropdownButtonFormField(
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Form ini wajib dipilih';
-                            }
-                            return null;
-                          },
-                          value: _butonSelected1,
-                          hint: const Text('Pilih Department'),
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              setState(() {
-                                _butonSelected1 = newValue;
-                              });
-                            }
-                          }, items: _dropDownMenuItems,
                         ),
                       ),
 
@@ -703,7 +862,6 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                              });
                        }
 
-
                        ElegantNotification.success(
                           title: const Text('Berhasil'),
                           description: const Text('Anda Berhasil mengirim request overtime'),
@@ -723,6 +881,8 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                     },
             ),
                  ),
+
+                 const SizedBox(height: 40)
 
                ],
              ),
@@ -752,6 +912,7 @@ class _RequestOvertimeState extends State<RequestOvertime> {
       'stepid': periksa,
       'status' : 'proses',
       'email' : '${FirebaseAuth.instance.currentUser!.email}',
+      'nama_pengaju': pengaju,
       'captanggal' : DateTime.now().toString()
     };
     await overtime.add(json);

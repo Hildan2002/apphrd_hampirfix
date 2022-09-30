@@ -232,28 +232,14 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                           child: const CardFolder(
                             image: Icon(Icons.inbox, size: 25,),
                             // image: Image.asset("assets/icons/folder-23B0B0.png"),
-                            title: "Approval",
-                            date: "Approved by HRD",
-                            color: Color(0xFF23B0B0),
+                            title: "Lembur",
+                            date: "Pengajuan Lembur",
+                            color: Color(0xFF415EB6),
                           ),
                         );
                       }
                     }
                 ),
-                // InkWell(
-                //   onTap: (){
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => const RequestOvertime())
-                //     );
-                //   },
-                //   child: const CardFolder(
-                //     image: Icon(Icons.more_time_sharp, size: 25,),
-                //     title: "Lembur",
-                //     date: "Pengajuan Lembur",
-                //     color: Color(0xFF415EB6),
-                //   ),
-                // ),
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -449,18 +435,18 @@ class CardFolder extends StatelessWidget {
           const SizedBox(height: 15),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: color,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 5),
           Text(
             date,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
-              color: color,
+              color: Colors.black,
             ),
           ),
         ],

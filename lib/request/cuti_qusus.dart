@@ -113,22 +113,6 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
       }
     }
   }
-
-  static const menuItems = <String>[
-    'CAM',
-    'CNC',
-    'MFG2',
-    'MAINTENANCE',
-    'MARKETING',
-    'PPIC',
-    'IT',
-    'ACCOUNTING',
-    'ADMIN',
-    'ENGINEERING',
-    'QA',
-    'QC',
-  ];
-
   static const menuItems2 = <String>[
     'Shift 1',
     'Shift 2'
@@ -154,14 +138,6 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
   final _dinasluarController = TextEditingController();
 
 
-
-  final List<DropdownMenuItem<String>> _dropDownMenuItems = menuItems.map(
-        (String value) =>
-        DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        ),
-  ).toList();
   final List<DropdownMenuItem<String>> _dropDownMenuItems2 = menuItems2.map(
         (String value) =>
         DropdownMenuItem<String>(
@@ -529,7 +505,8 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
                   // autofocus: true,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
-                    labelText: 'Jumlah Hari yang Diambil',
+                    hintText: "Input Total Hari Cuti yang akan Anda ambil",
+                    labelText: 'Total Jumlah Hari yang Diambil',
                   ),
                 ),
               ),
@@ -559,27 +536,6 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
               // ListTile(
               //   title: const Text('Pilih Department :'),
               //   trailing:
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 16),
-                child: DropdownButtonFormField(
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Form ini wajib dipilih';
-                    }
-                    return null;
-                  },
-                  value: _butonSelected1,
-                  hint: const Text('Pilih Department'),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _butonSelected1 = newValue;
-                      });
-                    }
-                  }, items: _dropDownMenuItems,
-                ),
-              ),
               // ),
 
               // ListTile(
@@ -855,10 +811,12 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
                       // }
                     },
                     child: const Text(
-                      'Upload Bukti File',
+                      'Upload Dokumen Pendukung',
                       style: TextStyle(color: Colors.white),
                     )),
               ),
+
+              Center(child: Text("Note : Hard File Dokumen Pendukung tetap wajib diberikan ke HRD", style: GoogleFonts.acme(fontSize: 12))),
 
               const SizedBox(height: 20),
 
@@ -944,6 +902,7 @@ class _RequestCutiQususState extends State<RequestCutiQusus> {
 
                   ]
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -1110,7 +1069,6 @@ class PushNotification {
 }
 class Lembur {
   var name_pic, secdept, tanggal, shift;
-  // List<Employee> list_employee = [];
 
   Lembur(String name_pic, String tanggal, String shift, String secdept);
 }

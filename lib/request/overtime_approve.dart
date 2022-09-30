@@ -5,7 +5,6 @@ import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -98,23 +97,23 @@ class Overtimeinside extends StatelessWidget {
     }
 
 
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme : ThemeData.light().copyWith(
-            textTheme: GoogleFonts.poppinsTextTheme(
-                Theme.of(context).textTheme)
-        ),
-        home: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+    return Scaffold(
+           appBar: AppBar(
+            // actions: <Widget>[
+            //   IconButton(
+            //       onPressed: (){
+            //         Navigator.push(
+            //           context,
+            //           MaterialPageRoute(builder: (context) => const HistoryApproval()),
+            //         );
+            //       },
+            //       icon: const Icon(Icons.history_toggle_off_rounded)
+            //   )
+            // ],
             backgroundColor: Colors.black,
-            title: Center(
-              child: Text('Message Overtime',
+            title: const Center(
+              child: Text(
+                  'Halaman Persetujuan Cuti',
                   textAlign: TextAlign.center),
             ),
           ),
@@ -162,7 +161,7 @@ class Overtimeinside extends StatelessWidget {
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 8.0),
                                           child:ListTile(
-                                            title: Text(documentSnapshot['email'].toString()),
+                                            title: Text(documentSnapshot['nama_pengaju'].toString()),
                                             subtitle: Text('Form ini Dikirim Oleh'),
                                           ),
                                         ),
@@ -404,7 +403,6 @@ class Overtimeinside extends StatelessWidget {
               ),
             ],
           ),
-        )
-    );
+        );
   }
 }

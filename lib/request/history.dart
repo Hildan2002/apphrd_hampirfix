@@ -1,5 +1,6 @@
 // import 'dart:ffi';
 // import 'dart:io';
+import 'package:aplikasi_hrd/request/ujicoba.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,7 +81,7 @@ class _HistoryPageState extends State<HistoryPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
-          title: const Text('Menu Export Data'),
+          title: const Text('Riwayat Pengajuan'),
           centerTitle: true,
           bottom: const TabBar(
             indicatorColor: Colors.lime,
@@ -202,13 +203,13 @@ class _HistoryPageState extends State<HistoryPage> {
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
+                                    title: Text(nama[nik.indexOf(documentSnapshot['stepid'].toString().substring(documentSnapshot['stepid'].toString().indexOf("@")+1, documentSnapshot['stepid'].toString().indexOf(".")))]),
+                                    // title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
                                         title: Text('Dokumen ini telah diterima pada ${documentSnapshot['captanggal'].toString().substring(0,documentSnapshot['captanggal'].toString().indexOf("."))} '
-                                            'dan sedang diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
-                                        )}'),
+                                            'dan sedang diverifikasi oleh Bapak/Ibu ${nama[nik.indexOf(documentSnapshot['stepid'].toString().substring(documentSnapshot['stepid'].toString().indexOf("@")+1, documentSnapshot['stepid'].toString().indexOf(".")))]}'),
                                       ),
                                       ListTile(
                                         title: Text("Tanggal diajukan: ${tanggal.substring(0,10)}"),
@@ -297,24 +298,26 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                             var tanggal = documentSnapshot['tanggal'];
+                            var tanggal2 = documentSnapshot['tanggal2'];
                             return Column(
                               children: [
                                 Card(
                                   margin: const EdgeInsets.all(5),
                                   child: ExpansionTile(
-                                    title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
+                                    title: Text(nama[nik.indexOf(documentSnapshot['stepid'].toString().substring(documentSnapshot['stepid'].toString().indexOf("@")+1, documentSnapshot['stepid'].toString().indexOf(".")))]),
+                                    // title: Text(documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@"))),
                                     subtitle: Text(documentSnapshot['tanggal']),
                                     children: <Widget>[
                                       ListTile(
                                         title: Text('Dokumen ini telah diterima pada ${documentSnapshot['captanggal'].toString().substring(0,documentSnapshot['captanggal'].toString().indexOf("."))} '
-                                            'dan sedang diverifikasi oleh Bapak/Ibu ${documentSnapshot['stepid'].toString().substring(0,documentSnapshot['stepid'].toString().indexOf("@")
-                                        )}'),
+                                            'dan sedang diverifikasi oleh Bapak/Ibu ${nama[nik.indexOf(documentSnapshot['stepid'].toString().substring(documentSnapshot['stepid'].toString().indexOf("@")+1, documentSnapshot['stepid'].toString().indexOf(".")))]
+                                        }'),
                                       ),
                                       ListTile(
                                         title: Text("Nama Pengaju: ${documentSnapshot['nama_pengaju'].toString()}"),
                                       ),
                                       ListTile(
-                                        title: Text("Tanggal : ${tanggal.substring(0,10)}"),
+                                        title: Text("dari tanggal : ${tanggal.substring(0,10)} sampai dengan tanggal ${tanggal2.substring(0,10)}"),
                                       ),
                                       ListTile(
                                         title: Text("Keterangan : ${documentSnapshot['keterangan'].toString()}"),
@@ -508,6 +511,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemBuilder: (context, index) {
                             final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                             var tanggal = documentSnapshot['tanggal'];
+                            var tanggal2 = documentSnapshot['tanggal2'];
                             return Column(
                               children: [
                                 Card(
@@ -521,7 +525,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                         title: Text("Nama Pengaju: ${documentSnapshot['nama_pengaju'].toString()}"),
                                       ),
                                       ListTile(
-                                        title: Text("Tanggal : ${tanggal.substring(0,10)}"),
+                                        title: Text("dari tanggal : ${tanggal.substring(0,10)} sampai dengan tanggal ${tanggal2.substring(0,10)}"),
                                       ),
                                       ListTile(
                                         title: Text("Keterangan ${documentSnapshot['keterangan'].toString()}"),

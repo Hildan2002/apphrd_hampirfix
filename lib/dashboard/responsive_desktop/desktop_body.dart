@@ -13,6 +13,7 @@ import 'package:elegant_notification/resources/arrays.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class DesktopScaffold extends StatefulWidget {
@@ -79,6 +80,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   //     ),
                   //   ),
                   // ),
+                  Text('Additional Menu', style: GoogleFonts.acme(fontSize: 20),),
+
+                  const SizedBox(height: 16),
 
                   InkWell(
                     onTap: (){
@@ -211,7 +215,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   child: const CardFolderDesktop(
                                     image: Icon(Icons.card_travel, size: 25,),
                                     title: "Cuti",
-                                    date: "Tombol Form Cuti",
+                                    date: "Pengajuan Cuti",
                                     color: Color(0xFFFFB110),
                                   ),
                                 );
@@ -227,7 +231,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                                   child: const CardFolderDesktop(
                                     image: Icon(Icons.card_travel, size: 25,),
                                     title: "Cuti",
-                                    date: "Tombol Form Cuti",
+                                    date: "Pengajuan Cuti",
                                     color: Color(0xFFFFB110),
                                   ),
                                 );
@@ -548,18 +552,18 @@ class CardFolderDesktop extends StatelessWidget {
           const SizedBox(height: 15),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: color,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 5),
           Text(
             date,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
-              color: color,
+              color: Colors.black,
             ),
           ),
         ],

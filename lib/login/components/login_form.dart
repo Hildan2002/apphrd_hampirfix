@@ -17,7 +17,7 @@ class LoginForm extends StatelessWidget {
     Future signIn() async{
       try{
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: usernameController.text.trim(),
+            email: '${usernameController.text.trim().toLowerCase()}.nsi',
             password: passwordController.text.trim(),
         );
       }
@@ -44,7 +44,7 @@ class LoginForm extends StatelessWidget {
               textInputAction: TextInputAction.next,
               cursorColor: kPrimaryColor,
               decoration: const InputDecoration(
-                hintText: "Your email",
+                hintText: "Your username",
                 prefixIcon: Padding(
                   padding: EdgeInsets.all(defaultPadding),
                   child: Icon(Icons.person),

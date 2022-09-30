@@ -98,6 +98,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Future<bool> _onWillPop() async {
+      return false; //<-- SEE HERE
+    }
+
     return MaterialApp(
       shortcuts: {
         LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
@@ -128,16 +132,19 @@ class MyApp extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           )),
-      home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot){
-            if (snapshot.hasData){
-              return const DashboardFilter();
+      home: WillPopScope(
+        onWillPop: _onWillPop,
+        child: StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot){
+              if (snapshot.hasData){
+                return const DashboardFilter();
+              }
+              else{
+                return const LoginScreen();
+              }
             }
-            else{
-              return const LoginScreen();
-            }
-          }
+        ),
       ),
     );
   }

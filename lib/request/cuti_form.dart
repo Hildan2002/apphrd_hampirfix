@@ -323,7 +323,7 @@ class _RequestCutiState extends State<RequestCuti> {
 
     CRUD(
       name_pengaju: pengaju,
-      nik: nameid,
+      nik: nameid.toUpperCase(),
       tanggal: tanggal,
       secdept: secdept,
       periksa: periksa,
@@ -542,13 +542,14 @@ class _RequestCutiState extends State<RequestCuti> {
                             // autofocus: true,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
-                              labelText: 'Jumlah Hari yang Diambil',
+                              hintText: 'Input Total Hari yang akan Anda Ambil',
+                              labelText: 'Total Hari yang Diambil',
                             ),
                           ),
                         ),
 
                         Padding(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 16),
                           child: DropdownButtonFormField(
                             validator: (value) {
@@ -868,10 +869,12 @@ class _RequestCutiState extends State<RequestCuti> {
                                 // }
                               },
                               child: const Text(
-                                  'Upload Surat Keterangan Dokter',
+                                  'Upload Dokumen Pendukung',
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
+
+                        Center(child: Text("Note : Hard File Dokumen Pendukung tetap wajib diberikan ke HRD", style: GoogleFonts.acme(fontSize: 12))),
 
                         const SizedBox(height: 20),
 
@@ -957,6 +960,7 @@ class _RequestCutiState extends State<RequestCuti> {
 
                           ]
                         ),
+                        const SizedBox(height: 20),
                       ],
                     ),
             ),
