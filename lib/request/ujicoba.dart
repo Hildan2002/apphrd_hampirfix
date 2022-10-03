@@ -16,6 +16,7 @@ class UjiCoba extends StatefulWidget {
 }
 
 List<String> nama = [
+"Yuki Takahashi",
 "Yujiro Takeuchi",
 "Ayuandini Thriziska Suhendi",
 "Eko Dida Prasetya",
@@ -324,6 +325,7 @@ List<String> nama = [
 "Yohanes Alferdo Oktama",
 "Yustina Widhianti"];
 List<String> nik = [
+  "takahashi",
   "takeuchi",
   "0916",
   "0921",
