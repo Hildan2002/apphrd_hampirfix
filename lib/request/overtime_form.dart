@@ -848,27 +848,34 @@ class _RequestOvertimeState extends State<RequestOvertime> {
                      ElevatedButton(
                      child: const Text('Send'),
                      onPressed: () {
-                       if (_formKey.currentState!.validate()) {
-                         _onDone();
-                         FirebaseFirestore.instance
-                             .collection("users")
-                             .where("email", isEqualTo: periksa)
-                             .get().then(
-                                 (QuerySnapshot snapshot) => {
-                               if(snapshot.docs.isNotEmpty){
-                                 sendPushMessage((snapshot.docs.first.data() as Map)["tokens"]),
-                                 debugPrint((snapshot.docs.first.data() as Map)["tokens"])
-                               }
-                             });
-                       }
-
-                       ElegantNotification.success(
-                          title: const Text('Berhasil'),
-                          description: const Text('Anda Berhasil mengirim request overtime'),
-                          notificationPosition: NotificationPosition.top,
-                          // dismissible: true,
-                         ).show(context);
-                       }
+                       if(cards.length != 0){
+                              if (_formKey.currentState!.validate()) {
+                                _onDone();
+                                FirebaseFirestore.instance
+                                    .collection("users")
+                                    .where("email", isEqualTo: periksa)
+                                    .get()
+                                    .then((QuerySnapshot snapshot) => {
+                                          if (snapshot.docs.isNotEmpty)
+                                            {
+                                              sendPushMessage(
+                                                  (snapshot.docs.first.data()
+                                                      as Map)["tokens"]),
+                                              debugPrint((snapshot.docs.first
+                                                  .data() as Map)["tokens"]),
+                                              ElegantNotification.success(
+                                                title: const Text('Berhasil'),
+                                                description: const Text(
+                                                    'Anda Berhasil mengirim request overtime'),
+                                                notificationPosition:
+                                                    NotificationPosition.top,
+                                                // dismissible: true,
+                                              ).show(context)
+                                            }
+                                        });
+                              }
+                            }
+                          }
 
                      ),
                  ],
