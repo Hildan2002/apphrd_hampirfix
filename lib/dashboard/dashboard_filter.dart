@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'responsive_desktop/desktop_body.dart';
 import 'responsive_desktop/mobile_body.dart';
@@ -50,6 +51,9 @@ class _DashboardFilterState extends State<DashboardFilter> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.green),
       home: ResponsiveLayout(

@@ -10,6 +10,7 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
+  final _formKey = GlobalKey<FormState>();
   final _PasswordlamaController = TextEditingController();
   final _PasswordbaruController = TextEditingController();
 
@@ -38,49 +39,63 @@ class _ChangePasswordState extends State<ChangePassword> {
         children: [
           const SizedBox(height: 100),
           SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 16),
-                  child: TextFormField(
-                    controller: _PasswordlamaController,
-                    textInputAction: TextInputAction.next,
-                    autofocus: true,
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Password Lama',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 16),
+                    child: TextFormField(
+                      controller: _PasswordlamaController,
+                      textInputAction: TextInputAction.next,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Password Lama',
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 16),
-                  child: TextFormField(
-                    controller: _PasswordbaruController,
-                    textInputAction: TextInputAction.next,
-                    autofocus: true,
-                    onChanged: (String value) async {
-                      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'kode' : value});
-                    },
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Password Baru',
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 16),
+                    child: TextFormField(
+                      controller: _PasswordbaruController,
+                      textInputAction: TextInputAction.next,
+                      autofocus: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value.length < 6) {
+                          return 'Form ini minimal 6 karakter';
+                        }
+                        return null;
+                      },
+                      onChanged: (String value) async {
+                        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'kode' : value});
+                      },
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Password Baru',
+                      ),
                     ),
                   ),
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(EmailAuthProvider.credential(email: FirebaseAuth.instance.currentUser!.email.toString(), password: _PasswordlamaController.text))
-                          .then((value){
-                        FirebaseAuth.instance.currentUser!.updatePassword(_PasswordbaruController.text);
-                        FirebaseAuth.instance.signOut();
-                      });
-                      // await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'password' : _PasswordbaruController});
-
-                    },
-                    child: Text('Change Password'))
-              ],
+                  ElevatedButton(
+                      onPressed: () async {
+      if (_formKey.currentState!.validate()) {
+        await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(
+              EmailAuthProvider.credential(email: FirebaseAuth.instance
+                  .currentUser!.email.toString(),
+                  password: _PasswordlamaController.text))
+              .then((value) {
+          FirebaseAuth.instance.currentUser!.updatePassword(
+                _PasswordbaruController.text);
+          FirebaseAuth.instance.signOut();
+        });
+        // await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'password' : _PasswordbaruController});
+      }
+                      },
+                      child: Text('Change Password'))
+                ],
+              ),
             ),
           ),
         ],
